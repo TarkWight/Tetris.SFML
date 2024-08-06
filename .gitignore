@@ -4,3 +4,7 @@ Build/
 # Ignore miscellaneous system files
 .DS_Store
 Thumbs.db
+
+# CLion project files
+.idea
+cmake-build-*
