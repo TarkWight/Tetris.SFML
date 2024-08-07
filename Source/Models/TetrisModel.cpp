@@ -74,7 +74,7 @@ void TetrisModel::updateScore() {
     }
 }
 
-void TetrisModel::moveShapeHorizontal(int directionX) {
+void TetrisModel::moveShapeHorizontal() {
     for (std::size_t i{}; i < SQUARES; i++) {
         previousShapeCoordinates[i] = currentShapeCoordinates[i];
         currentShapeCoordinates[i].x += directionX;

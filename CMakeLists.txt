@@ -33,6 +33,8 @@ add_executable(Tetris_SFML
     Source/Models/TetrisModel.cpp
     Source/Views/TetrisView.hpp
     Source/Views/TetrisView.cpp
+    Source/Controllers/TetrisController.hpp
+    Source/Controllers/TetrisController.cpp
 )
 
 # Define the resource directory
