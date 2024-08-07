@@ -40,7 +40,7 @@ public:
     bool checkCollision() const;
     void initializeShape();
     void updateScore();
-    void moveShapeHorizontal(int directionX);
+    void moveShapeHorizontal();
     void rotateShape();
     void moveShapeDown();
 };
