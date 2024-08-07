@@ -28,7 +28,14 @@ endif()
 
 # Define the executable
 add_executable(Tetris_SFML
-    Source/Main.cpp)
+    Source/Main.cpp
+    Source/Models/TetrisModel.hpp
+    Source/Models/TetrisModel.cpp
+    Source/Views/TetrisView.hpp
+    Source/Views/TetrisView.cpp
+    Source/Controllers/TetrisController.hpp
+    Source/Controllers/TetrisController.cpp
+)
 
 # Define the resource directory
 target_compile_definitions(Tetris_SFML PRIVATE RESOURCE_DIR="${CMAKE_SOURCE_DIR}/Resources")
