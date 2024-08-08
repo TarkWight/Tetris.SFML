@@ -9,6 +9,7 @@
 #include <memory>
 #include "Models/TetrisModel.hpp"
 #include "Views/TetrisView.hpp"
+#include "Models/Leaderboard.hpp"
 
 class TetrisController {
 private:
