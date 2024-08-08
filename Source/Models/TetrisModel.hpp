@@ -38,6 +38,7 @@ public:
     bool maxLimit();
 
     bool checkCollision() const;
+    int getScore() const;
     void initializeShape();
     void updateScore();
     void moveShapeHorizontal();

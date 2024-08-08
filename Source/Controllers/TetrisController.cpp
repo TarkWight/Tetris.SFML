@@ -4,8 +4,7 @@
 
 #include "TetrisController.hpp"
 
-TetrisController::TetrisController() {
-}
+TetrisController::TetrisController() {}
 
 void TetrisController::run() {
     while (view.window->isOpen()) {

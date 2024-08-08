@@ -74,6 +74,11 @@ void TetrisModel::updateScore() {
     }
 }
 
+int TetrisModel::getScore() const {
+    return currentScore;
+}
+
+
 void TetrisModel::moveShapeHorizontal() {
     for (std::size_t i{}; i < SQUARES; i++) {
         previousShapeCoordinates[i] = currentShapeCoordinates[i];
