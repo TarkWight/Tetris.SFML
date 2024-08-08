@@ -55,6 +55,9 @@ void TetrisModel::initializeShape() {
 
 void TetrisModel::updateScore() {
     std::uint32_t match = LINES - 1;
+    std::uint32_t rowsCleared = 0;
+
+    // Start from the bottom and move upwards
     for (std::size_t i = match; i >= 1; --i) {
         std::uint32_t sum{};
         for (std::size_t j{}; j < COLS; j++) {
@@ -66,13 +69,35 @@ void TetrisModel::updateScore() {
             }
             area[match][j] = area[i][j];
         }
-        if (sum < COLS) {
-            match--;
+        if (sum == COLS) {
+            ++rowsCleared; // Count this row as cleared
         } else {
-            currentScore++;
+            // Move non-full lines down
+            area[match] = area[i];
+            --match;
         }
     }
+
+    // Calculate score based on the number of rows cleared
+    switch (rowsCleared) {
+        case 1:
+            currentScore += 100;
+            break;
+        case 2:
+            currentScore += 300;
+            break;
+        case 3:
+            currentScore += 700;
+            break;
+        case 4:
+            currentScore += 1500;
+            break;
+        default:
+            // No additional score for 0 or more than 4 rows
+            break;
+    }
 }
+
 
 int TetrisModel::getScore() const {
     return currentScore;
