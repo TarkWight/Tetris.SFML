@@ -63,6 +63,7 @@ void TetrisView::draw(const TetrisModel& model) {
         sprite->setPosition(model.currentShapeCoordinates[i].x * 36, model.currentShapeCoordinates[i].y * 36);
         window->draw(*sprite);
     }
+    txtScore.setString("SCORE: " + std::to_string(model.getScore()));
 
     window->draw(txtScore);
     if (model.isGameOver) {

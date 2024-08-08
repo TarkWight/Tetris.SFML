@@ -4,8 +4,9 @@
 
 #include "TetrisController.hpp"
 
-TetrisController::TetrisController() {
-}
+TetrisController::TetrisController() {}
+
+Leaderboard leaderboard;
 
 void TetrisController::run() {
     while (view.window->isOpen()) {
@@ -16,6 +17,12 @@ void TetrisController::run() {
             model.moveShapeDown();
             model.updateScore();
             model.initializeShape();
+        } else {
+            // Добавляем результат в таблицу лидеров
+            std::string playerName = "Player"; // Замените на имя игрока
+            leaderboard.addScore(playerName, model.currentScore);
+            leaderboard.print();
+            view.window->close();
         }
         view.draw(model);
     }
