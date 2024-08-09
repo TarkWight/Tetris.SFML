@@ -1,30 +1,30 @@
 # Tetris.SFML
 
-## Описание
+## Description
 
-`Tetris.SFML` — это реализация классической игры Тетрис с использованием библиотеки SFML и архитектуры MVC. Проект разработан с акцентом на соблюдение стандартов кодирования LLVM и включает в себя различные функции, такие как таблица лидеров, возможность сохранения результатов, пауза в игре, а также настраиваемое меню.
+`Tetris.SFML` is an implementation of the classic Tetris game using the SFML library and MVC architecture. The project is designed with a focus on adhering to LLVM coding standards and includes various features such as a leaderboard, the ability to save results, pause the game, and a customisable menu.
 
-## Основные функции:
-- **Графический интерфейс с использованием SFML.**
-- **Клавиатурное управление.**
-- **Меню игры:**
-  - Старт игры.
-  - Выход.
-  - Изменение цвета.
-- **Пауза в игре с возможностью продолжить или выйти в меню.**
-- **Таблица лидеров:**
-  - Отображение топ-5 результатов.
-  - Сохранение и загрузка лучших результатов.
-  - Показ таблицы лидеров после окончания игры.
-- **Плавное увеличение скорости игры по мере набора очков.**
+## Main Features:
+- **Graphical interface using SFML.**
+- **Keyboard controls.**
+- **Game menu:**
+  - Game Start.
+  - Exit.
+  - Colour change.
+- **Pause the game with the option to continue or exit to the menu.**
+- **Leaderboard:**
+  - Display top 5 results.
+  - Saves and downloads top scores.
+  - Showing the leaderboard after the end of the game.
+- **Smoothly increase the speed of the game as you score points.**
 
-## Сборка и запуск
+## Build and run
 
-Для сборки проекта на MacOS и Windows используйте Visual Stidio 2022, CLion. Проект настроен для работы с использованием пакета управления Chocolatey на Windows и Homebrew на MacOS.
+Use Visual Stidio 2022, CLion to build the project on macOS and Windows. The project is configured to run using the Chocolatey management pack on Windows and Homebrew on macOS.
 
 
-### Установка зависимостей
-## Windows:
+### Dependency installation
+### Windows:
 ```
 choco install cmake
 choco install sfml
@@ -34,7 +34,7 @@ choco install spdlog
 choco install cxxopts
 ```
 
-## MacOS:
+## macOS:
 ```
 brew install cmake
 brew install sfml
@@ -44,24 +44,24 @@ brew install spdlog
 brew install cxxopts
 ```
 
-## Для Windows:
-Откройте PowerShell и выполните команду:
+## For Windows:
+Open PowerShell and run the command:
 
 ```powershell
 .\build.ps1
 ```
-Скрипт автоматически создаст директорию для сборки, сгенерирует проект с использованием генератора Visual Studio 17 2022, и выполнит сборку в режиме Release.
+The script will automatically create a build directory, generate the project using the Visual Studio 17 2022 generator, and run the build in Release mode.
 
 
-## Для macOS:
-Сделайте скрипт `build.sh` исполняемым:
+## For macOS:
+Make the ``build.sh` script executable:
 
 ```bash
 chmod +x build.sh
 ```
-Выполните скрипт:
+Execute the script:
 
 ```bash
 ./build.sh
 ```
-Скрипт создаст директорию для сборки, сгенерирует проект с использованием Makefiles, и выполнит сборку.
+The script will create a build directory, generate a project using Makefiles, and run the build.
