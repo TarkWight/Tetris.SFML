@@ -5,6 +5,8 @@ Build/
 .DS_Store
 Thumbs.db
 
-# CLion project files
+# CLion and VS22 project files
 .idea
 cmake-build-*
+out/
+.vs
