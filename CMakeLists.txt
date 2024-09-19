@@ -13,11 +13,25 @@ endif()
 
 add_executable(Tetris_SFML
 Source/Main.cpp
+Source/Controllers/MainGameController.hpp
+Source/Controllers/MainGameController.cpp
+Source/Controllers/TetrisController.hpp
+Source/Controllers/TetrisController.cpp
+Source/Utils/ColorPalette.hpp
+Source/Views/MainMenuView.hpp
+Source/Views/MainMenuView.cpp
+Source/Views/TetrisView.hpp
+Source/Views/TetrisView.cpp
+Source/Models/SoundModel.hpp
+Source/Models/TetrisModel.hpp
+Source/Models/TetrisModel.cpp
 )
 
 target_link_libraries(Tetris_SFML
 sfml-system
 sfml-window
-sfml-graphics)
+sfml-graphics
+sfml-audio
+)
 
 target_compile_definitions(Tetris_SFML PRIVATE RESOURCE_DIR="${CMAKE_SOURCE_DIR}/Resources")
