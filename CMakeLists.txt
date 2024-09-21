@@ -18,11 +18,16 @@ Source/Controllers/MainGameController.cpp
 Source/Controllers/TetrisController.hpp
 Source/Controllers/TetrisController.cpp
 Source/Utils/ColorPalette.hpp
+Source/Utils/Particle.hpp
+Source/Utils/Particle.cpp
+Source/Utils/Piece.hpp
+Source/Utils/Piece.cpp
 Source/Views/MainMenuView.hpp
 Source/Views/MainMenuView.cpp
 Source/Views/TetrisView.hpp
 Source/Views/TetrisView.cpp
 Source/Models/SoundModel.hpp
+Source/Models/SoundModel.cpp
 Source/Models/TetrisModel.hpp
 Source/Models/TetrisModel.cpp
 )

@@ -16,7 +16,7 @@ MainMenuView::MainMenuView() : palette(), hoveredButton(nullptr), selectedButton
     startText.setPosition(startButton.getPosition().x + 10, startButton.getPosition().y + 10);
 
     changeColorText.setFont(font);
-    changeColorText.setString("Change Color");
+    changeColorText.setString("Change sf::Color");
     changeColorText.setCharacterSize(24);
     changeColorText.setFillColor(palette.defaultTextColor);
     changeColorText.setPosition(changeColorButton.getPosition().x + 10, changeColorButton.getPosition().y + 10);

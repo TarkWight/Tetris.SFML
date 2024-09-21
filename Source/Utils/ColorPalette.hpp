@@ -14,7 +14,7 @@ struct ColorPalette{
         selectedTextColor(194, 88, 91),
         background(199, 222, 252) {}
 
-    sf::Color defaultButtonColor;
+   sf::Color defaultButtonColor;
     sf::Color selectedButtonColor;
     sf::Color defaultOutlineColor;
     sf::Color selectedOutlineColor;
