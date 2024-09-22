@@ -19,13 +19,13 @@ public:
 private:
     sf::RectangleShape startButton;
     sf::RectangleShape changeColorButton;
-     sf::RectangleShape leaderboardButton;
+    sf::RectangleShape leaderboardButton;
     sf::RectangleShape exitButton;
 
     sf::Font font;
     sf::Text startText;
     sf::Text changeColorText;
-     sf::Text leaderboardText;
+    sf::Text leaderboardText;
     sf::Text exitText;
     ColorPalette palette;
     sf::RectangleShape* hoveredButton;

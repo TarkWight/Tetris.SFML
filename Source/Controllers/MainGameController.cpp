@@ -1363,6 +1363,4 @@ void MainGameController::startTetrisGame() {
             start--;
             game_clock.restart();
         }
-    
-
 }
