@@ -59,31 +59,31 @@ void MainGameController::startTetrisGame() {
 
     // Загрузка текстур для блоков
     sf::Texture texturePiece;
-    texturePiece.loadFromFile(resourcePath + "/Resources/Sprites/jstris1.png");
+    texturePiece.loadFromFile(resourcePath + "/Sprites/jstris1.png");
     int textureSize = 30;  // Размер текстуры блока
     sf::Sprite spritePiece(texturePiece);
     spritePiece.setTextureRect(sf::IntRect(0, 0, textureSize, textureSize));
 
     // Загрузка текстуры для "призрака"
     sf::Texture textureGhost;
-    textureGhost.loadFromFile(resourcePath + "/Resources/Sprites/ghost.png");
+    textureGhost.loadFromFile(resourcePath + "/Sprites/ghost.png");
     sf::Sprite spriteGhost(textureGhost);
     spriteGhost.setTextureRect(sf::IntRect(0, 0, textureSize, textureSize));
 
     // Загрузка текстуры для анимации заблокированных блоков
     sf::Texture textureLockedPiece;
-    textureLockedPiece.loadFromFile(resourcePath + "/Resources/Sprites/piece_lock.png");
+    textureLockedPiece.loadFromFile(resourcePath + "/Sprites/piece_lock.png");
     sf::Sprite spriteLockedPiece(textureLockedPiece);
     spriteLockedPiece.setTextureRect(sf::IntRect(0, 0, textureSize, textureSize));
 
     // Загрузка текстуры для игрового поля
     sf::Texture textureBoard;
-    textureBoard.loadFromFile(resourcePath + "/Resources/Sprites/board.png");
+    textureBoard.loadFromFile(resourcePath + "/Sprites/board.png");
     sf::Sprite spriteBoard(textureBoard);
 
     // Загрузка шрифта
     sf::Font fontGame;
-    fontGame.loadFromFile(resourcePath + "/Resources/Fonts/Minecraft.ttf");
+    fontGame.loadFromFile(resourcePath + "/Fonts/Minecraft.ttf");
 
     int holdPiece;            // Переменная для хранения состояния удерживания тетромино
     int moveX;          // Переменная для перемещения по оси X
@@ -452,6 +452,7 @@ restart:
                 ///       вращения).
                 if (holded) {
                     if (holdPiece == -1) {
+
                         holdPiece = colorPiece;
                         colorPiece = -1;
 
@@ -517,16 +518,33 @@ restart:
                     }
                 }
 
-                //HardDrop
+                /// \brief Обработка жёсткого падения фигуры (Hard Drop).
+                ///
+                /// Этот блок кода реализует механику жёсткого падения фигуры, при котором она
+                /// мгновенно опускается на самое нижнее возможное положение на игровом поле.
+                ///
+                /// \details
+                /// - Когда игрок активирует жёсткое падение (переменная hardDrop равна true),
+                ///   фигура опускается до тех пор, пока не столкнётся с другими блоками или нижней границей поля.
+                /// - Каждый шаг падения сопровождается генерацией частиц для визуализации.
+                /// - После того как фигура достигла нижней позиции, она немного поднимается
+                ///   вверх, чтобы откорректировать столкновение.
+                /// - После этого сбрасывается задержка блокировки (lockDelayValue),
+                ///   и происходит переход к созданию новой фигуры.
+                ///
+                /// \note Жёсткое падение значительно ускоряет процесс игры, так как мгновенно
+                ///       завершает движение фигуры до её фиксации на поле.
                 if (hardDrop && start <= 0) {
-
                     while (isCollided()) {
-
-                        for (int i = 0; i < 4; i++) currentPiece[i].y++;
+                        for (int i = 0; i < 4; i++) {
+                            currentPiece[i].y++;
+                        }
                         createParticle(&particles);
                     }
 
-                    for (int i = 0; i < 4; i++) currentPiece[i].y--;
+                    for (int i = 0; i < 4; i++) {
+                        currentPiece[i].y--;
+                    }
                     lockDelayValue = -1;
                     goto makeNewPiece;
                 }
