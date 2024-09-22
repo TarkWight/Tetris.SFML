@@ -52,6 +52,10 @@ void MainGameController::handleMainMenuEvent(const sf::Event& event) {
     }
 }
 
+
+
+
+
 /// Запускает новую игру в Тетрис.
 void MainGameController::startTetrisGame() {
     sf::RenderWindow gameWindow(sf::VideoMode(600, 720), "Tetris");
@@ -549,244 +553,303 @@ restart:
                     goto makeNewPiece;
                 }
 
-                //========================= Rotate =========================
+                /// \brief Обработка вращения фигуры.
+                ///
+                /// Этот блок кода реализует механику вращения текущей фигуры, учитывая
+                /// её тип и возможные столкновения с другими блоками или границами игрового поля.
+                ///
+                /// \details
+                /// - Если активировано вращение (rotatePiece не равно 0), сохраняется текущее положение
+                ///   фигуры перед вращением.
+                /// - Для фигуры типа I_TETROMINO вращение происходит с учетом её текущей ориентации.
+                /// - Для других типов фигур вращение происходит с использованием метода rotate,
+                ///   который принимает центр вращения и направление вращения.
+                /// - После вращения проверяется возможность перемещения фигуры.
+                /// - Если фигура не может быть перемещена, выполняется проверка, является ли фигура
+                ///   T_TETROMINO и подсчитываются возможные углы для определения T-Spin.
+                ///
+                /// \note Для фигуры I_TETROMINO используется специальная логика вращения,
+                ///       учитывающая ее уникальную форму.
                 if (rotatePiece != 0) {
-
-                    int before_rotation, after_rotation;
+                    int beforeRotation, afterRotation;
                     for (int i = 0; i < 4; i++) {
-
                         previousPiecePosition[i] = currentPiece[i];
-                        before_rotation = currentPiece[i].rotation;
+                        beforeRotation = currentPiece[i].rotation;
+
                         if (colorPiece == I_TETROMINO) {
-
                             if (currentPiece[i].rotation == 1) {
-
                                 if (rotatePiece == 1) {
-                                    if (i == 0) { currentPiece[i].x -= 1, currentPiece[i].y -= 1; };
-                                    if (i == 2) { currentPiece[i].x += 1, currentPiece[i].y += 1; };
-                                    if (i == 3) { currentPiece[i].x += 2, currentPiece[i].y += 2; };
-                                }
-                                else {
-                                    if (i == 0) { currentPiece[i].x -= 2, currentPiece[i].y += 2; };
-                                    if (i == 1) { currentPiece[i].x -= 1, currentPiece[i].y += 1; };
-                                    if (i == 3) { currentPiece[i].x += 1, currentPiece[i].y -= 1; };
+                                    if (i == 0) {
+                                        currentPiece[i].x -= 1, currentPiece[i].y -= 1;
+                                    }
+                                    if (i == 2) {
+                                        currentPiece[i].x += 1, currentPiece[i].y += 1;
+                                    }
+                                    if (i == 3) {
+                                        currentPiece[i].x += 2, currentPiece[i].y += 2;
+                                    }
+                                } else {
+                                    if (i == 0) {
+                                        currentPiece[i].x -= 2, currentPiece[i].y += 2;
+                                    }
+                                    if (i == 1) {
+                                        currentPiece[i].x -= 1, currentPiece[i].y += 1;
+                                    }
+                                    if (i == 3) {
+                                        currentPiece[i].x += 1, currentPiece[i].y -= 1;
+                                    }
                                 }
                             }
                             if (currentPiece[i].rotation == 2) {
 
                                 if (rotatePiece == 1) {
-                                    if (i == 0) { currentPiece[i].x -= 2, currentPiece[i].y += 2; };
-                                    if (i == 1) { currentPiece[i].x -= 1, currentPiece[i].y += 1; };
-                                    if (i == 3) { currentPiece[i].x += 1, currentPiece[i].y -= 1; };
+                                    if (i == 0) {
+                                        currentPiece[i].x -= 2, currentPiece[i].y += 2;
+                                    }
+                                    if (i == 1) {
+                                        currentPiece[i].x -= 1, currentPiece[i].y += 1;
+                                    }
+                                    if (i == 3) {
+                                        currentPiece[i].x += 1, currentPiece[i].y -= 1;
+                                    }
                                 }
                                 else {
-                                    if (i == 0) { currentPiece[i].x += 1, currentPiece[i].y += 1; };
-                                    if (i == 2) { currentPiece[i].x -= 1, currentPiece[i].y -= 1; };
-                                    if (i == 3) { currentPiece[i].x -= 2, currentPiece[i].y -= 2; };
+                                    if (i == 0) {
+                                        currentPiece[i].x += 1, currentPiece[i].y += 1;
+                                    }
+                                    if (i == 2) {
+                                        currentPiece[i].x -= 1, currentPiece[i].y -= 1;
+                                    }
+                                    if (i == 3) {
+                                        currentPiece[i].x -= 2, currentPiece[i].y -= 2;
+                                    }
                                 }
                             }
                             if (currentPiece[i].rotation == 3) {
-
                                 if (rotatePiece == 1) {
-                                    if (i == 0) { currentPiece[i].x += 1, currentPiece[i].y += 1; };
-                                    if (i == 2) { currentPiece[i].x -= 1, currentPiece[i].y -= 1; };
-                                    if (i == 3) { currentPiece[i].x -= 2, currentPiece[i].y -= 2; };
-                                }
-                                else {
-                                    if (i == 0) { currentPiece[i].x += 2, currentPiece[i].y -= 2; };
-                                    if (i == 1) { currentPiece[i].x += 1, currentPiece[i].y -= 1; };
-                                    if (i == 3) { currentPiece[i].x -= 1, currentPiece[i].y += 1; };
+                                    if (i == 0) {
+                                        currentPiece[i].x += 1, currentPiece[i].y += 1;
+                                    }
+                                    if (i == 2) {
+                                        currentPiece[i].x -= 1, currentPiece[i].y -= 1;
+                                    }
+                                    if (i == 3) {
+                                        currentPiece[i].x -= 2, currentPiece[i].y -= 2;
+                                    }
+                                } else {
+                                    if (i == 0) {
+                                        currentPiece[i].x += 2, currentPiece[i].y -= 2;
+                                    }
+                                    if (i == 1) {
+                                        currentPiece[i].x += 1, currentPiece[i].y -= 1;
+                                    }
+                                    if (i == 3) {
+                                        currentPiece[i].x -= 1, currentPiece[i].y += 1;
+                                    }
                                 }
                             }
+
                             if (currentPiece[i].rotation == 4) {
-
                                 if (rotatePiece == 1) {
-                                    if (i == 0) { currentPiece[i].x += 2, currentPiece[i].y -= 2; };
-                                    if (i == 1) { currentPiece[i].x += 1, currentPiece[i].y -= 1; };
-                                    if (i == 3) { currentPiece[i].x -= 1, currentPiece[i].y += 1; };
-                                }
-                                else {
-                                    if (i == 0) { currentPiece[i].x -= 1, currentPiece[i].y -= 1; };
-                                    if (i == 2) { currentPiece[i].x += 1, currentPiece[i].y += 1; };
-                                    if (i == 3) { currentPiece[i].x += 2, currentPiece[i].y += 2; };
+                                    if (i == 0) {
+                                        currentPiece[i].x += 2, currentPiece[i].y -= 2;
+                                    }
+                                    if (i == 1) {
+                                        currentPiece[i].x += 1, currentPiece[i].y -= 1;
+                                    }
+                                    if (i == 3) {
+                                        currentPiece[i].x -= 1, currentPiece[i].y += 1;
+                                    }
+                                } else {
+                                    if (i == 0) {
+                                        currentPiece[i].x -= 1, currentPiece[i].y -= 1;
+                                    }
+                                    if (i == 2) {
+                                        currentPiece[i].x += 1, currentPiece[i].y += 1;
+                                    }
+                                    if (i == 3) {
+                                        currentPiece[i].x += 2, currentPiece[i].y += 2;
+                                    }
                                 }
                             }
+
                             currentPiece[i].rotation += rotatePiece;
+                        } else if (colorPiece != O_TETROMINO) {
+                            currentPiece[i].rotate(currentPiece[1], rotatePiece);
                         }
-                        else if (colorPiece != O_TETROMINO) currentPiece[i].rotate(currentPiece[1], rotatePiece);
 
-                        if (currentPiece[i].rotation > 4) currentPiece[i].rotation = 1;
-                        if (currentPiece[i].rotation < 1) currentPiece[i].rotation = 4;
+                        if (currentPiece[i].rotation > 4) {
+                            currentPiece[i].rotation = 1;
+                        }
+                        if (currentPiece[i].rotation < 1) {
+                            currentPiece[i].rotation = 4;
+                        }
 
-                        after_rotation = currentPiece[i].rotation;
+                        afterRotation = currentPiece[i].rotation;
                     }
 
-                    Piece rotation_piece[4];
+                    /// \brief Обработка вращения фигуры.
+                    /// 
+                    /// Этот блок кода реализует механику вращения текущей фигуры, учитывая
+                    /// её тип и возможные столкновения с другими блоками или границами игрового поля.
+                    /// 
+                    /// \details
+                    /// - Если активировано вращение (rotatePiece не равно 0), сохраняется текущее положение
+                    ///   фигуры перед вращением.
+                    /// - Для фигуры типа I_TETROMINO вращение происходит с учетом её текущей ориентации.
+                    /// - Для других типов фигур вращение осуществляется с использованием метода rotate,
+                    ///   который принимает центр вращения и направление вращения.
+                    /// - После вращения проверяется возможность перемещения фигуры.
+                    /// - Если фигура не может быть перемещена, выполняется проверка, является ли фигура
+                    ///   T_TETROMINO, и подсчитываются возможные углы для определения T-Spin.
+                    /// 
+                    /// \note Для фигуры I_TETROMINO используется специальная логика вращения,
+                    ///       учитывающая её уникальную форму.
+
+                    Piece rotationPieces[4];
                     if (colorPiece != I_TETROMINO) {
-
-                        if ((before_rotation == 1 && after_rotation == 2) || (before_rotation == 3 && after_rotation == 2)) { //1 >> 2 & 3 >> 2
-                            //TEST 2
+                        if ((beforeRotation == 1 && afterRotation == 2) || (beforeRotation == 3 && afterRotation == 2)) {
                             if (!isCollided()) {
                                 for (int i = 0; i < 4; i++) {
 
-                                    rotation_piece[i].x = currentPiece[i].x;
-                                    rotation_piece[i].y = currentPiece[i].y;
+                                    rotationPieces[i].x = currentPiece[i].x;
+                                    rotationPieces[i].y = currentPiece[i].y;
                                     currentPiece[i].x += -1;
                                     currentPiece[i].y += 0;
                                 }
                             }
-                            //TEST 3
                             if (!isCollided()) {
                                 for (int i = 0; i < 4; i++) {
 
-                                    currentPiece[i].x = rotation_piece[i].x;
-                                    currentPiece[i].y = rotation_piece[i].y;
+                                    currentPiece[i].x = rotationPieces[i].x;
+                                    currentPiece[i].y = rotationPieces[i].y;
                                     currentPiece[i].x += -1;
                                     currentPiece[i].y += -1;
                                 }
                             }
-                            //TEST 4
                             if (!isCollided()) {
                                 for (int i = 0; i < 4; i++) {
 
-                                    currentPiece[i].x = rotation_piece[i].x;
-                                    currentPiece[i].y = rotation_piece[i].y;
+                                    currentPiece[i].x = rotationPieces[i].x;
+                                    currentPiece[i].y = rotationPieces[i].y;
                                     currentPiece[i].x += 0;
                                     currentPiece[i].y += 2;
                                 }
                             }
-                            //TEST 5
                             if (!isCollided()) {
                                 for (int i = 0; i < 4; i++) {
 
-                                    currentPiece[i].x = rotation_piece[i].x;
-                                    currentPiece[i].y = rotation_piece[i].y;
+                                    currentPiece[i].x = rotationPieces[i].x;
+                                    currentPiece[i].y = rotationPieces[i].y;
                                     currentPiece[i].x += -1;
                                     currentPiece[i].y += 2;
                                 }
                             }
                         }
-                        if ((before_rotation == 2 && after_rotation == 1) || (before_rotation == 2 && after_rotation == 3)) { //2 >> 1 && 2 >> 3
-                            //TEST 2
+
+                        if ((beforeRotation == 2 && afterRotation == 1) || (beforeRotation == 2 && afterRotation == 3)) {
                             if (!isCollided()) {
                                 for (int i = 0; i < 4; i++) {
 
-                                    rotation_piece[i].x = currentPiece[i].x;
-                                    rotation_piece[i].y = currentPiece[i].y;
+                                    rotationPieces[i].x = currentPiece[i].x;
+                                    rotationPieces[i].y = currentPiece[i].y;
                                     currentPiece[i].x += 1;
                                     currentPiece[i].y += 0;
                                 }
                             }
-                            //TEST 3
                             if (!isCollided()) {
                                 for (int i = 0; i < 4; i++) {
 
-                                    currentPiece[i].x = rotation_piece[i].x;
-                                    currentPiece[i].y = rotation_piece[i].y;
+                                    currentPiece[i].x = rotationPieces[i].x;
+                                    currentPiece[i].y = rotationPieces[i].y;
                                     currentPiece[i].x += 1;
                                     currentPiece[i].y += 1;
                                 }
                             }
-                            //TEST 4
                             if (!isCollided()) {
                                 for (int i = 0; i < 4; i++) {
 
-                                    currentPiece[i].x = rotation_piece[i].x;
-                                    currentPiece[i].y = rotation_piece[i].y;
+                                    currentPiece[i].x = rotationPieces[i].x;
+                                    currentPiece[i].y = rotationPieces[i].y;
                                     currentPiece[i].x += 0;
                                     currentPiece[i].y += -2;
                                 }
                             }
-                            //TEST 5
                             if (!isCollided()) {
                                 for (int i = 0; i < 4; i++) {
 
-                                    currentPiece[i].x = rotation_piece[i].x;
-                                    currentPiece[i].y = rotation_piece[i].y;
+                                    currentPiece[i].x = rotationPieces[i].x;
+                                    currentPiece[i].y = rotationPieces[i].y;
                                     currentPiece[i].x += 1;
                                     currentPiece[i].y += -2;
                                 }
                             }
                         }
-                        if ((before_rotation == 3 && after_rotation == 4) || (before_rotation == 1 && after_rotation == 4)) { //3 >> 4 & 1 >> 4
-                            //TEST 2
+
+                        if ((beforeRotation == 3 && afterRotation == 4) || (beforeRotation == 1 && afterRotation == 4)) {
                             if (!isCollided()) {
                                 for (int i = 0; i < 4; i++) {
-
-                                    rotation_piece[i].x = currentPiece[i].x;
-                                    rotation_piece[i].y = currentPiece[i].y;
+                                    rotationPieces[i].x = currentPiece[i].x;
+                                    rotationPieces[i].y = currentPiece[i].y;
                                     currentPiece[i].x += 1;
                                     currentPiece[i].y += 0;
                                 }
                             }
-                            //TEST 3
                             if (!isCollided()) {
                                 for (int i = 0; i < 4; i++) {
-
-                                    currentPiece[i].x = rotation_piece[i].x;
-                                    currentPiece[i].y = rotation_piece[i].y;
+                                    currentPiece[i].x = rotationPieces[i].x;
+                                    currentPiece[i].y = rotationPieces[i].y;
                                     currentPiece[i].x += 1;
                                     currentPiece[i].y += -1;
                                 }
                             }
-                            //TEST 4
                             if (!isCollided()) {
                                 for (int i = 0; i < 4; i++) {
-
-                                    currentPiece[i].x = rotation_piece[i].x;
-                                    currentPiece[i].y = rotation_piece[i].y;
+                                    currentPiece[i].x = rotationPieces[i].x;
+                                    currentPiece[i].y = rotationPieces[i].y;
                                     currentPiece[i].x += 0;
                                     currentPiece[i].y += 2;
                                 }
                             }
-                            //TEST 5
                             if (!isCollided()) {
                                 for (int i = 0; i < 4; i++) {
-
-                                    currentPiece[i].x = rotation_piece[i].x;
-                                    currentPiece[i].y = rotation_piece[i].y;
+                                    currentPiece[i].x = rotationPieces[i].x;
+                                    currentPiece[i].y = rotationPieces[i].y;
                                     currentPiece[i].x += 1;
                                     currentPiece[i].y += 2;
                                 }
                             }
                         }
-                        if ((before_rotation == 4 && after_rotation == 3) || (before_rotation == 4 && after_rotation == 1)) { //4 >> 3 && 4 >> 1
-                            //TEST 2
+
+                        if ((beforeRotation == 4 && afterRotation == 3) || (beforeRotation == 4 && afterRotation == 1)) {
                             if (!isCollided()) {
                                 for (int i = 0; i < 4; i++) {
-
-                                    rotation_piece[i].x = currentPiece[i].x;
-                                    rotation_piece[i].y = currentPiece[i].y;
+                                    rotationPieces[i].x = currentPiece[i].x;
+                                    rotationPieces[i].y = currentPiece[i].y;
                                     currentPiece[i].x += -1;
                                     currentPiece[i].y += 0;
                                 }
                             }
-                            //TEST 3
                             if (!isCollided()) {
                                 for (int i = 0; i < 4; i++) {
-
-                                    currentPiece[i].x = rotation_piece[i].x;
-                                    currentPiece[i].y = rotation_piece[i].y;
+                                    currentPiece[i].x = rotationPieces[i].x;
+                                    currentPiece[i].y = rotationPieces[i].y;
                                     currentPiece[i].x += -1;
                                     currentPiece[i].y += 1;
                                 }
                             }
-                            //TEST 4
                             if (!isCollided()) {
                                 for (int i = 0; i < 4; i++) {
-
-                                    currentPiece[i].x = rotation_piece[i].x;
-                                    currentPiece[i].y = rotation_piece[i].y;
+                                    currentPiece[i].x = rotationPieces[i].x;
+                                    currentPiece[i].y = rotationPieces[i].y;
                                     currentPiece[i].x += 0;
                                     currentPiece[i].y += -2;
                                 }
                             }
-                            //TEST 5
                             if (!isCollided()) {
                                 for (int i = 0; i < 4; i++) {
-
-                                    currentPiece[i].x = rotation_piece[i].x;
-                                    currentPiece[i].y = rotation_piece[i].y;
+                                    currentPiece[i].x = rotationPieces[i].x;
+                                    currentPiece[i].y = rotationPieces[i].y;
                                     currentPiece[i].x += -1;
                                     currentPiece[i].y += -2;
                                 }
@@ -794,92 +857,129 @@ restart:
                         }
                     }
 
-                    if (!isCollided()) for (int i = 0; i < 4; i++) currentPiece[i] = previousPiecePosition[i];
-                    else {
-
+                    if (!isCollided()) {
+                        for (int i = 0; i < 4; i++) {
+                            currentPiece[i] = previousPiecePosition[i];
+                        }
+                    } else {
                         if (lockCountValue > 0) {
-
                             lockCountValue--;
                             lockDelayValue = lockDelay;
                         }
 
                         if (colorPiece == T_TETROMINO) {
-
                             int corner_count = 0;
-                            if (board[currentPiece[1].y + 1][currentPiece[1].x + 1] != 0 || currentPiece[1].x + 1 >= WIDTH || currentPiece[1].y + 1 >= HEIGHT) corner_count++;
-                            if (board[currentPiece[1].y + 1][currentPiece[1].x - 1] != 0 || currentPiece[1].x - 1 < 0 || currentPiece[1].y + 1 >= HEIGHT) corner_count++;
-                            if (board[currentPiece[1].y - 1][currentPiece[1].x + 1] != 0 || currentPiece[1].x + 1 >= WIDTH || currentPiece[1].y - 1 < 0) corner_count++;
-                            if (board[currentPiece[1].y - 1][currentPiece[1].x - 1] != 0 || currentPiece[1].x - 1 < 0 || currentPiece[1].y + 1 < 0) corner_count++;
+                            if (board[currentPiece[1].y + 1][currentPiece[1].x + 1] != 0 || currentPiece[1].x + 1 >= WIDTH || currentPiece[1].y + 1 >= HEIGHT) {
+                                corner_count++;
+                            }
+                            if (board[currentPiece[1].y + 1][currentPiece[1].x - 1] != 0 || currentPiece[1].x - 1 < 0 || currentPiece[1].y + 1 >= HEIGHT) {
+                                corner_count++;
+                            }
+                            if (board[currentPiece[1].y - 1][currentPiece[1].x + 1] != 0 || currentPiece[1].x + 1 >= WIDTH || currentPiece[1].y - 1 < 0) {
+                                corner_count++;
+                            }
+                            if (board[currentPiece[1].y - 1][currentPiece[1].x - 1] != 0 || currentPiece[1].x - 1 < 0 || currentPiece[1].y + 1 < 0) {
+                                corner_count++;
+                            }
 
                             if (corner_count >= 3) {
-
                                 isTSpin = 1;
                             }
                         }
                     }
                 }
-
-                //Game Update
+                
+                /// \brief Обновление игры.
+                /// 
+                /// Этот блок кода выполняет обновление состояния игры, включая перемещение текущей фигуры
+                /// вниз по игровому полю и проверку на столкновения. Если фигура достигла дна или 
+                /// других блоков, происходит её фиксация на игровом поле и генерация новой фигуры.
+                /// 
+                /// \details
+                /// - Если таймер игры превышает заданную задержку, текущая фигура перемещается вниз.
+                /// - Проверяется возможность перемещения фигуры; если столкновений нет, 
+                ///   фиксируются её координаты и происходит создание эффектов частиц.
+                /// - В случае, если фигура фиксируется на поле, обновляется состояние игрового поля,
+                ///   добавляются фиксированные блоки, и определяется новая фигура из мешка семи.
+                /// - Проверяется возможность очистки линий, подсчитывается количество очищенных линий
+                ///   и обновляются соответствующие статистики.
+                /// - Если фигурa не может быть перемещена из-за столкновения, её положение возвращается
+                ///   к предыдущему состоянию.
+                /// 
+                /// \note При очистке линий учитываются специальные комбинации, такие как T-Spin.
                 if (gameTimer > gameDelay) {
-
                 makeNewPiece:
-
                     for (int i = 0; i < 4; i++) {
-
                         previousPiecePosition[i] = currentPiece[i];
                         currentPiece[i].y++;
                     }
 
                     if (!isCollided() && lockDelayValue < 0) {
-
                         if (!holded) {
-
                             createParticle(&particles);
                             createParticle(&particles);
                             createParticle(&particles);
 
-                            std::vector<PieceLock> piece_lock;
+                            std::vector<PieceLock> pieceLockList;
                             for (int i = 0; i < 4; i++) {
-
                                 PieceLock piece_lock_one;
                                 piece_lock_one.x = currentPiece[i].x;
                                 piece_lock_one.y = currentPiece[i].y;
 
-                                piece_lock.push_back(piece_lock_one);
+                                pieceLockList.push_back(piece_lock_one);
                             }
-                            piecesLock.push_back(piece_lock);
+                            piecesLock.push_back(pieceLockList);
 
                             boardWobble = 7;
                             totalPieceCount++;
                         }
 
-                        for (int i = 0; i < 4; i++) board[previousPiecePosition[i].y][previousPiecePosition[i].x] = colorPiece + 1;
-                        int choose_piece = bagOfSevenPieces.at(0);
+                        for (int i = 0; i < 4; i++) {
+                            board[previousPiecePosition[i].y][previousPiecePosition[i].x] = colorPiece + 1;
+                        }
+
+                        int selectedPiece = bagOfSevenPieces.at(0);
                         bagOfSevenPieces.erase(bagOfSevenPieces.begin());
+                        
                         if (bagOfSevenPieces.size() == 0) {
                             bagOfSevenPieces = nextBagOfSevenPieces;
                             nextBagOfSevenPieces = generateNewBag();
                         }
 
-                        colorPiece = choose_piece;
+                        colorPiece = selectedPiece;
                         for (int i = 0; i < 4; i++) {
-
-                            currentPiece[i].x = pieces[choose_piece][i] % 2 + 4;
-                            currentPiece[i].y = pieces[choose_piece][i] / 2 + 2;
+                            currentPiece[i].x = pieces[selectedPiece][i] % 2 + 4;
+                            currentPiece[i].y = pieces[selectedPiece][i] / 2 + 2;
                             currentPiece[i].rotation = 0;
 
-                            if (colorPiece == J_TETROMINO) currentPiece[i].x--;
-                            if (colorPiece == I_TETROMINO) currentPiece[i].y++;
+                            if (colorPiece == J_TETROMINO) {
+                                currentPiece[i].x--;
+                            }
+                            if (colorPiece == I_TETROMINO) {
+                                currentPiece[i].y++;
+                            }
                         }
-                        for (int i = 0; i < 4; i++) {
 
+                        for (int i = 0; i < 4; i++) {
                             Piece center = currentPiece[1];
-                            if (colorPiece == I_TETROMINO) currentPiece[i].rotate(center, 1);
-                            if (colorPiece == T_TETROMINO) currentPiece[i].rotate(center, -1);
-                            if (colorPiece == S_TETROMINO) currentPiece[i].rotate(center, -1);
-                            if (colorPiece == Z_TETROMINO) currentPiece[i].rotate(center, -1);
-                            if (colorPiece == L_TETROMINO) currentPiece[i].rotate(center, -1);
-                            if (colorPiece == J_TETROMINO) currentPiece[i].rotate(center, 1);
+                            if (colorPiece == I_TETROMINO) {
+                                currentPiece[i].rotate(center, 1);
+                            }
+                            if (colorPiece == T_TETROMINO) {
+                                currentPiece[i].rotate(center, -1);
+                            }
+                            if (colorPiece == S_TETROMINO) {
+                                currentPiece[i].rotate(center, -1);
+                            }
+                            if (colorPiece == Z_TETROMINO) {
+                                currentPiece[i].rotate(center, -1);
+                            }
+                            if (colorPiece == L_TETROMINO) {
+                                currentPiece[i].rotate(center, -1);
+                            }
+                            if (colorPiece == J_TETROMINO) {
+                                currentPiece[i].rotate(center, 1);
+                            }
                             currentPiece[i].rotation = 1;
                         }
 
@@ -887,57 +987,60 @@ restart:
                         lockCountValue = lockCount;
                         isTouchGround = false;
 
-                        //=====================Clear Lines========================
-                        int line_clear_count = 0;
+                        /// \brief Обновление состояния игры.
+                        ///
+                        /// Этот блок кода отвечает за обновление состояния игрового процесса, включая
+                        /// передвижение фигуры вниз, проверку столкновений, создание новой фигуры, 
+                        /// блокировку фигуры на месте, очистку линий и сброс счетчиков.
+                        int lineClearCount = 0;
                         int checkLine = HEIGHT - 1;
                         for (int i = HEIGHT - 1; i > 0; i--) {
-
                             int count = 0;
                             for (int j = 0; j < WIDTH; j++) {
-
                                 if (board[i][j]) count++;
                                 board[checkLine][j] = board[i][j];
                             }
-                            if (count < WIDTH) checkLine--;
-                            else line_clear_count++;
-                        }
-                        if (line_clear_count != 0) {
 
-                            lineClearCombo++;
-                            if (line_clear_count == 4 || isTSpin) {
-                                btbCombo++;
+                            if (count < WIDTH) {
+                                checkLine--;
+                            } else {
+                                lineClearCount++;
                             }
-                            else {
+                        }
 
+                        if (lineClearCount != 0) {
+                            lineClearCombo++;
+
+                            if (lineClearCount == 4 || isTSpin) {
+                                btbCombo++;
+                            } else {
                                 if (btbCombo != 0) {
                                     btbCombo = 0;
                                 }
                             }
 
-                            totalLineCount += line_clear_count;
-                        }
-                        else if (lineClearCombo != 0) {
+                            totalLineCount += lineClearCount;
+                        } else if (lineClearCombo != 0) {
                             lineClearCombo = 0;
                         }
 
-                        int perfect_clear = 1;
+                        int perfectClear = 1;
                         for (int i = 0; i < HEIGHT; i++) {
                             for (int j = 0; j < WIDTH; j++) {
-                                if (board[i][j] != 0) perfect_clear = 0;
+                                if (board[i][j] != 0) {
+                                    perfectClear = 0;
+                                }
                             }
                         }
                         isTSpin = 0;
-                    }
-                    else if (!isCollided()) {
-
-                        for (int i = 0; i < 4; i++) currentPiece[i] = previousPiecePosition[i];
-                    }
-                    else {
-
+                    } else if (!isCollided()) {
+                        for (int i = 0; i < 4; i++) {
+                            currentPiece[i] = previousPiecePosition[i];
+                        }
+                    } else {
                         lockCountValue = lockCount;
 
                         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
-
                             createParticle(&particles);
                             createParticle(&particles);
                         }
@@ -947,20 +1050,30 @@ restart:
                 }
                 boardWobble += 100 * ((-boardWobble) / 15) * elapsedTime;
 
-                //Update Ghost
+                /// \brief Обновление и отображение "Призрака" фигуры.
+                /// 
+                /// Этот блок кода отвечает за обновление "призрака" (Ghost) — прозрачного отображения фигуры,
+                /// показывающего её будущее положение при быстром падении (Hard Drop).
+                /// 
+                /// \details 
+                /// - Призрак копирует координаты текущей фигуры.
+                /// - Призрак движется вниз, пока не столкнётся с другими блоками или границами.
+                /// - После достижения нижнего положения, фигура-призрак поднимается на одну клетку, чтобы не пересекаться с коллизиями.
                 for (int i = 0; i < 4; i++) {
-
                     ghost[i].x = currentPiece[i].x;
                     ghost[i].y = currentPiece[i].y;
                 }
+
                 for (int i = 0; i < 4; i++) {
-
                     while (isCollidedGhost()) {
-
-                        for (int i = 0; i < 4; i++) ghost[i].y++;
+                        for (int i = 0; i < 4; i++) {
+                            ghost[i].y++;
+                        }
                     }
 
-                    for (int i = 0; i < 4; i++) ghost[i].y--;
+                    for (int i = 0; i < 4; i++) {
+                        ghost[i].y--;
+                    }
                 }
 
                 moveX = 0;
@@ -973,131 +1086,180 @@ restart:
 
                 gameWindow.clear(sf::Color::Black);
 
-                //Draw Backboard
-                sf::RectangleShape backboard_shape;
-                backboard_shape.setSize(sf::Vector2f(320, 650));
-                backboard_shape.setFillColor(sf::Color::White);
-                backboard_shape.setPosition(140, 20 + boardWobble);
-                gameWindow.draw(backboard_shape);
+                /// \brief Отрисовка заднего фона.
+                /// 
+                /// Этот блок кода отрисовывает заднюю панель игрового поля (Backboard).
+                sf::RectangleShape backboardShape;
+                backboardShape.setSize(sf::Vector2f(320, 650));
+                backboardShape.setFillColor(sf::Color::White);
+                backboardShape.setPosition(140, 20 + boardWobble);
+                gameWindow.draw(backboardShape);
 
-                //Draw Grid
+                /// \brief Отрисовка сетки игрового поля.
+                /// 
+                /// Этот блок кода отвечает за отображение сетки, на которой происходят игровые действия.
                 spriteBoard.setPosition(150, -30 + boardWobble);
                 gameWindow.draw(spriteBoard);
 
-                //Draw Das Bar
-                float das_progress = std::max((double)0, (double)(lockDelayValue / lockDelay));
+                /// \brief Отрисовка полосы DAS (Delayed Auto Shift).
+                /// 
+                /// Полоса DAS отображает прогресс задержки перед перемещением фигуры
+                /// при удерживании клавиши влево или вправо.
+                float dasProgress = std::max((double)0, (double)(lockDelayValue / lockDelay));
 
-                sf::RectangleShape das_bar_shape;
-                das_bar_shape.setSize(sf::Vector2f(das_progress * 320, 8));
-                das_bar_shape.setFillColor(sf::Color::White);
-                das_bar_shape.setPosition(140, 700 + boardWobble);
-                gameWindow.draw(das_bar_shape);
+                sf::RectangleShape dasBarShape;
+                dasBarShape.setSize(sf::Vector2f(dasProgress * 320, 8));
+                dasBarShape.setFillColor(sf::Color::White);
+                dasBarShape.setPosition(140, 700 + boardWobble);
+                gameWindow.draw(dasBarShape);
 
-                //Draw Lock Count
-                sf::CircleShape lock_count_circle;
-                lock_count_circle.setRadius(6);
-                lock_count_circle.setFillColor(sf::Color::White);
+                /// \brief Отрисовка удерживаемой фигуры (Hold).
+                /// 
+                /// Этот блок отвечает за отображение удерживаемой фигуры в отдельной области экрана.
+                /// 
+                /// \details
+                /// - Если фигура удерживается (holdPiece != -1), копируются её координаты и отрисовываются.
+                /// - Положение удерживаемой фигуры скорректировано для некоторых фигур (например, I_TETROMINO, J_TETROMINO).
+                sf::CircleShape lockCountCircle;
+                lockCountCircle.setRadius(6);
+                lockCountCircle.setFillColor(sf::Color::White);
                 for (int i = 0; i < lockCountValue; i++) {
-
-                    lock_count_circle.setPosition(141 + (i * 23.5), 680 + boardWobble);
-                    gameWindow.draw(lock_count_circle);
+                    lockCountCircle.setPosition(141 + (i * 23.5), 680 + boardWobble);
+                    gameWindow.draw(lockCountCircle);
                 }
 
-                //Draw Hold
+                /// \brief Отрисовка удерживаемой фигуры (Hold).
+                /// 
+                /// Этот блок отвечает за отображение удерживаемой фигуры в отдельной области экрана.
+                /// 
+                /// \details
+                /// - Если фигура удерживается (holdPiece != -1), копируются её координаты и отрисовываются.
+                /// - Положение удерживаемой фигуры скорректировано для некоторых фигур (например, I_TETROMINO, J_TETROMINO).
                 spritePiece.setColor(sf::Color(255, 255, 255, 255));
                 if (holdPiece != -1) {
+                    Piece holdPieceBlocks[4];
+                    int holdPieceIndex = holdPiece;
 
-                    Piece hold_piece[4];
-                    int hold_piece_choose;
-                    hold_piece_choose = holdPiece;
+                    for (int i = 0; i < 4; i++) {
+                        holdPieceBlocks[i].x = pieces[holdPieceIndex][i] % 2 + 4;
+                        holdPieceBlocks[i].y = pieces[holdPieceIndex][i] / 2 + 3;
 
-                    for (int j = 0; j < 4; j++) {
-
-                        hold_piece[j].x = pieces[hold_piece_choose][j] % 2 + 4;
-                        hold_piece[j].y = pieces[hold_piece_choose][j] / 2 + 3;
-
-                        if (holdPiece == J_TETROMINO) hold_piece[j].x--;
-                    }
-                    for (int j = 0; j < 4; j++) {
-
-                        Piece center = hold_piece[1];
-                        if (holdPiece == I_TETROMINO) hold_piece[j].rotate(center, 1);
-                        if (holdPiece == T_TETROMINO) hold_piece[j].rotate(center, -1);
-                        if (holdPiece == S_TETROMINO) hold_piece[j].rotate(center, -1);
-                        if (holdPiece == Z_TETROMINO) hold_piece[j].rotate(center, -1);
-                        if (holdPiece == L_TETROMINO) hold_piece[j].rotate(center, -1);
-                        if (holdPiece == J_TETROMINO) hold_piece[j].rotate(center, 1);
+                        if (holdPiece == J_TETROMINO) {
+                            holdPieceBlocks[i].x--;
+                        }
                     }
 
-                    for (int j = 0; j < 4; j++) {
+                    for (int i = 0; i < 4; i++) {
+                        Piece center = holdPieceBlocks[1];
+                        if (holdPiece == I_TETROMINO) {
+                            holdPieceBlocks[i].rotate(center, 1);
+                        }
+                        if (holdPiece == T_TETROMINO) {
+                            holdPieceBlocks[i].rotate(center, -1);
+                        }
+                        if (holdPiece == S_TETROMINO) {
+                            holdPieceBlocks[i].rotate(center, -1);
+                        }
+                        if (holdPiece == Z_TETROMINO) {
+                            holdPieceBlocks[i].rotate(center, -1);
+                        }
+                        if (holdPiece == L_TETROMINO) {
+                            holdPieceBlocks[i].rotate(center, -1);
+                        }
+                        if (holdPiece == J_TETROMINO) {
+                            holdPieceBlocks[i].rotate(center, 1);
+                        }
+                    }
 
+                    for (int i = 0; i < 4; i++) {
                         spritePiece.setTextureRect(sf::IntRect(holdPiece * textureSize, 0, textureSize, textureSize));
-                        int x_offset = 0;
-                        if (holdPiece == I_TETROMINO || holdPiece == O_TETROMINO) x_offset = 15;
-                        spritePiece.setPosition(hold_piece[j].x * textureSize - 65 - x_offset, hold_piece[j].y * textureSize - 10);
+                        int xOffset = 0;
+                        if (holdPiece == I_TETROMINO || holdPiece == O_TETROMINO) {
+                            xOffset = 15;
+                        }
+                        spritePiece.setPosition(holdPieceBlocks[i].x * textureSize - 65 - xOffset, holdPieceBlocks[i].y * textureSize - 10);
                         gameWindow.draw(spritePiece);
                     }
                 }
 
-                //Draw Next Pieces
+                /// \brief Отрисовка следующих фигур (Next Pieces).
+                ///
+                /// Отображает до пяти следующих фигур, которые будут выпадать в игре.
                 spritePiece.setColor(sf::Color(255, 255, 255, 255));
                 for (int i = 0; i < bagOfSevenPieces.size() + nextBagOfSevenPieces.size(); i++) {
-
                     if (i < 5) {
-
-                        Piece next_piece[4];
-                        int next_piece_choose;
-                        if (i < bagOfSevenPieces.size()) next_piece_choose = bagOfSevenPieces.at(i);
-                        else next_piece_choose = nextBagOfSevenPieces.at(i - bagOfSevenPieces.size());
-
-                        int next_color = next_piece_choose;
-                        for (int j = 0; j < 4; j++) {
-
-                            next_piece[j].x = pieces[next_piece_choose][j] % 2 + 4;
-                            next_piece[j].y = pieces[next_piece_choose][j] / 2 + 3;
-
-                            if (next_color == J_TETROMINO) next_piece[j].x--;
+                        Piece nextPiece[4];
+                        int nextPieceChoose;
+                        if (i < bagOfSevenPieces.size()) {
+                            nextPieceChoose = bagOfSevenPieces.at(i);
+                        } else {
+                            nextPieceChoose = nextBagOfSevenPieces.at(i - bagOfSevenPieces.size());
                         }
-                        for (int j = 0; j < 4; j++) {
 
-                            Piece center = next_piece[1];
-                            if (next_color == I_TETROMINO) next_piece[j].rotate(center, 1);
-                            if (next_color == T_TETROMINO) next_piece[j].rotate(center, -1);
-                            if (next_color == S_TETROMINO) next_piece[j].rotate(center, -1);
-                            if (next_color == Z_TETROMINO) next_piece[j].rotate(center, -1);
-                            if (next_color == L_TETROMINO) next_piece[j].rotate(center, -1);
-                            if (next_color == J_TETROMINO) next_piece[j].rotate(center, 1);
+                        int nextColor = nextPieceChoose;
+                        for (int j = 0; j < 4; j++) {
+                            nextPiece[j].x = pieces[nextPieceChoose][j] % 2 + 4;
+                            nextPiece[j].y = pieces[nextPieceChoose][j] / 2 + 3;
+
+                            if (nextColor == J_TETROMINO) {
+                                nextPiece[j].x--;
+                            }
                         }
 
                         for (int j = 0; j < 4; j++) {
+                            Piece center = nextPiece[1];
+                            if (nextColor == I_TETROMINO) {
+                                nextPiece[j].rotate(center, 1);
+                            }
+                            if (nextColor == T_TETROMINO) {
+                                nextPiece[j].rotate(center, -1);
+                            }
+                            if (nextColor == S_TETROMINO) {
+                                nextPiece[j].rotate(center, -1);
+                            }
+                            if (nextColor == Z_TETROMINO) {
+                                nextPiece[j].rotate(center, -1);
+                            }
+                            if (nextColor == L_TETROMINO) {
+                                nextPiece[j].rotate(center, -1);
+                            }
+                            if (nextColor == J_TETROMINO) {
+                                nextPiece[j].rotate(center, 1);
+                            }
+                        }
 
-                            spritePiece.setTextureRect(sf::IntRect(next_color * textureSize, 0, textureSize, textureSize));
-                            int x_offset = 0;
-                            if (next_color == I_TETROMINO || next_color == O_TETROMINO) x_offset = 15;
-                            spritePiece.setPosition(next_piece[j].x * textureSize + 395 - x_offset, next_piece[j].y * textureSize - 10 + (90 * i));
+                        for (int j = 0; j < 4; j++) {
+                            spritePiece.setTextureRect(sf::IntRect(nextColor * textureSize, 0, textureSize, textureSize));
+                            int xOffset = 0;
+                            if (nextColor == I_TETROMINO || nextColor == O_TETROMINO) {
+                                xOffset = 15;
+                            }
+                            spritePiece.setPosition(nextPiece[j].x * textureSize + 395 - xOffset, nextPiece[j].y * textureSize - 10 + (90 * i));
                             gameWindow.draw(spritePiece);
                         }
                     }
                 }
 
-                //Draw Placed Pieces
+                /// \brief Отрисовка размещенных на поле фигур.
+                ///
+                /// Проходим по игровому полю и отрисовываем уже размещенные на нем фигуры.
                 for (int i = 0; i < HEIGHT; i++) {
-
                     for (int j = 0; j < WIDTH; j++) {
-
                         spritePiece.setColor(sf::Color(255, 255, 255, 255));
-                        if (board[i][j] == 0) continue;
+                        if (board[i][j] == 0) {
+                            continue;
+                        }
                         spritePiece.setTextureRect(sf::IntRect((board[i][j] - 1) * textureSize, 0, textureSize, textureSize));
                         spritePiece.setPosition(j * textureSize + 150, i * textureSize - 90 + boardWobble);
                         gameWindow.draw(spritePiece);
                     }
                 }
 
-                //Draw Piece Lock
+                /// \brief Отрисовка анимации блокировки фигур.
+                ///
+                /// Фигуры, которые были заблокированы, анимируются и постепенно исчезают.
                 for (int i = 0; i < piecesLock.size(); i++) {
-
                     for (int j = 0; j < 4; j++) {
-
                         spriteLockedPiece.setTextureRect(sf::IntRect((int)piecesLock.at(i).at(j).animation * textureSize, 0, textureSize, textureSize));
                         spriteLockedPiece.setColor(sf::Color(255, 255, 255, 200));
                         spriteLockedPiece.setPosition(piecesLock.at(i).at(j).x * textureSize + 150, (piecesLock.at(i).at(j).y - 1) * textureSize - 90 + boardWobble);
@@ -1107,66 +1269,70 @@ restart:
                     }
 
                     for (int j = 0; j < 4; j++) {
-
                         if (piecesLock.at(i).at(j).animation >= 67) {
-
                             piecesLock.erase(piecesLock.begin() + i);
                             break;
                         }
                     }
                 }
 
-                //Draw Ghost
+                /// \brief Отрисовка призрачной фигуры (Ghost Piece).
                 spriteGhost.setTextureRect(sf::IntRect(colorPiece * textureSize, 0, textureSize, textureSize));
                 for (int i = 0; i < 4; i++) {
-
                     spriteGhost.setPosition(currentPiece[i].x * textureSize + 150, ghost[i].y * textureSize - 90 + boardWobble);
                     gameWindow.draw(spriteGhost);
                 }
 
-                //Draw Pieces
+                /// \brief Отрисовка текущей фигуры (Current Piece).
                 pieceIndicatorShapeAlpha = (sin(elapsedGameTime.getElapsedTime().asSeconds() * 10) + 1) * 30;
-                sf::RectangleShape piece_indicator_shape;
-                piece_indicator_shape.setSize(sf::Vector2f(30, 30));
-                piece_indicator_shape.setFillColor(sf::Color(255, 255, 255, pieceIndicatorShapeAlpha));
+                sf::RectangleShape pieceIndicatorShape;
+                pieceIndicatorShape.setSize(sf::Vector2f(30, 30));
+                pieceIndicatorShape.setFillColor(sf::Color(255, 255, 255, pieceIndicatorShapeAlpha));
 
-                float piece_alpha = std::max((double)0, (double)(lockDelayValue / lockDelay));
+                double pieceAlpha = std::max((double)0, (double)(lockDelayValue / lockDelay));
                 for (int i = 0; i < 4; i++) {
-
                     spritePiece.setTextureRect(sf::IntRect(7 * textureSize, 0, textureSize, textureSize));
                     spritePiece.setColor(sf::Color(255, 255, 255, 255));
                     spritePiece.setPosition(currentPiece[i].x * textureSize + 150, currentPiece[i].y * textureSize - 90 + boardWobble);
                     gameWindow.draw(spritePiece);
 
                     spritePiece.setTextureRect(sf::IntRect(colorPiece * textureSize, 0, textureSize, textureSize));
-                    spritePiece.setColor(sf::Color(255, 255, 255, piece_alpha * 255));
+                    spritePiece.setColor(sf::Color(255, 255, 255, pieceAlpha * 255));
                     spritePiece.setPosition(currentPiece[i].x * textureSize + 150, currentPiece[i].y * textureSize - 90 + boardWobble);
                     gameWindow.draw(spritePiece);
 
-                    piece_indicator_shape.setPosition(currentPiece[i].x * textureSize + 150, currentPiece[i].y * textureSize - 90 + boardWobble);
-                    gameWindow.draw(piece_indicator_shape);
+                    pieceIndicatorShape.setPosition(currentPiece[i].x * textureSize + 150, currentPiece[i].y * textureSize - 90 + boardWobble);
+                    gameWindow.draw(pieceIndicatorShape);
                 }
 
-                //Draw Particle
+                /// \brief Отрисовка частиц.
+                ///
+                /// Частицы, создаваемые при различных эффектах, таких как исчезновение фигур.
                 for (int i = 0; i < particles.size(); i++) {
-
                     particles.at(i).update(elapsedTime);
                     particles.at(i).draw(&gameWindow);
-                    if (particles.at(i).alpha <= 0) particles.erase(particles.begin() + i);
+                    if (particles.at(i).alpha <= 0) {
+                        particles.erase(particles.begin() + i);
+                    }
                 }
 
-                //Draw Backboard
-                backboard_shape.setSize(sf::Vector2f(320, 20));
-                backboard_shape.setFillColor(sf::Color::Black);
-                backboard_shape.setPosition(140, 0 + boardWobble);
-                gameWindow.draw(backboard_shape);
+                /// \brief Отрисовка фона.
+                ///
+                /// 
+                /// Панель отображает элементы интерфейса, такие как очки и индикаторы.
+                backboardShape.setSize(sf::Vector2f(320, 20));
+                backboardShape.setFillColor(sf::Color::Black);
+                backboardShape.setPosition(140, 0 + boardWobble);
+                gameWindow.draw(backboardShape);
 
-                backboard_shape.setSize(sf::Vector2f(320, 10));
-                backboard_shape.setFillColor(sf::Color::White);
-                backboard_shape.setPosition(140, 10 + boardWobble);
-                gameWindow.draw(backboard_shape);
+                backboardShape.setSize(sf::Vector2f(320, 10));
+                backboardShape.setFillColor(sf::Color::White);
+                backboardShape.setPosition(140, 10 + boardWobble);
+                gameWindow.draw(backboardShape);
 
-                //Draw Text
+                /// \brief Отрисовка текстовых элементов интерфейса игры.
+                ///
+                /// Этот блок кода отвечает за отображение текста, включая "NEXT", "HOLD", количество линий и фигур.
                 sf::Text text;
                 text.setFont(fontGame);
                 text.setCharacterSize(35);
@@ -1186,15 +1352,15 @@ restart:
                 if (lineClearCombo - 1 > 0) gameWindow.draw(text);
 
                 sf::RectangleShape text_box;
-                sf::Rect text_rect = text.getLocalBounds();;
+                sf::Rect textRectangle = text.getLocalBounds();;
                 text_box.setFillColor(sf::Color::White);
 
                 text.setFillColor(sf::Color::Black);
                 text.setCharacterSize(25);
                 text.setString("LINES");
-                text_rect = text.getLocalBounds();
-                text.setPosition(120 - text_rect.width, 400 + boardWobble);
-                text_box.setSize(sf::Vector2f(text_rect.width + 40, text_rect.height * 2 - 4));
+                textRectangle = text.getLocalBounds();
+                text.setPosition(120 - textRectangle.width, 400 + boardWobble);
+                text_box.setSize(sf::Vector2f(textRectangle.width + 40, textRectangle.height * 2 - 4));
                 text_box.setOrigin(sf::Vector2f(20, 0));
                 text_box.setPosition(text.getPosition());
                 gameWindow.draw(text_box);
@@ -1203,16 +1369,16 @@ restart:
                 text.setFillColor(sf::Color::White);
                 text.setCharacterSize(30);
                 text.setString(std::to_string(totalLineCount));
-                text_rect = text.getLocalBounds();
-                text.setPosition(120 - text_rect.width, 450 + boardWobble);
+                textRectangle = text.getLocalBounds();
+                text.setPosition(120 - textRectangle.width, 450 + boardWobble);
                 gameWindow.draw(text);
 
                 text.setFillColor(sf::Color::Black);
                 text.setCharacterSize(25);
                 text.setString("PIECES");
-                text_rect = text.getLocalBounds();
-                text.setPosition(120 - text_rect.width, 510 + boardWobble);
-                text_box.setSize(sf::Vector2f(text_rect.width + 40, text_rect.height * 2 - 4));
+                textRectangle = text.getLocalBounds();
+                text.setPosition(120 - textRectangle.width, 510 + boardWobble);
+                text_box.setSize(sf::Vector2f(textRectangle.width + 40, textRectangle.height * 2 - 4));
                 text_box.setOrigin(sf::Vector2f(20, 0));
                 text_box.setPosition(text.getPosition());
                 gameWindow.draw(text_box);
@@ -1221,8 +1387,8 @@ restart:
                 text.setFillColor(sf::Color::White);
                 text.setCharacterSize(30);
                 text.setString(std::to_string(totalPieceCount));
-                text_rect = text.getLocalBounds();
-                text.setPosition(120 - text_rect.width, 560 + boardWobble);
+                textRectangle = text.getLocalBounds();
+                text.setPosition(120 - textRectangle.width, 560 + boardWobble);
                 gameWindow.draw(text);
 
                 gameWindow.display();
