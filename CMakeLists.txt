@@ -26,8 +26,6 @@ Source/Views/MainMenuView.hpp
 Source/Views/MainMenuView.cpp
 Source/Views/TetrisView.hpp
 Source/Views/TetrisView.cpp
-Source/Models/SoundModel.hpp
-Source/Models/SoundModel.cpp
 Source/Models/TetrisModel.hpp
 Source/Models/TetrisModel.cpp
 )

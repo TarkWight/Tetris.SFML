@@ -41,6 +41,9 @@ public:
     void runGame();
 
 protected:
+    /// ѕуть к ресурсам игры.
+    std::string resourcePath = RESOURCE_DIR;
+
     /// ‘лаг, указывающий, активное ли главное меню.
     bool isMenuActive = true;
 
@@ -52,22 +55,22 @@ protected:
     /// —истема гарантирует, что в каждой последовательности будут все типы тетромино.
     /// \return ¬ектор с тетромино в случайном пор€дке.
     std::vector<int> generateNewBag() {
-        std::vector<int> template_bag;
+        std::vector<int> templateBag;
 
         for (int i = 0; i < 7; i++) {
-            template_bag.push_back(i);
+            templateBag.push_back(i);
         }
 
-        std::vector<int> new_bag;
+        std::vector<int> newBag;
 
-        while (template_bag.size() > 0) {
-            int index = rand() % template_bag.size();
-            int choose_piece = template_bag.at(index);
-            template_bag.erase(template_bag.begin() + index);
-            new_bag.push_back(choose_piece);
+        while (templateBag.size() > 0) {
+            int index = rand() % templateBag.size();
+            int choosePiece = templateBag.at(index);
+            templateBag.erase(templateBag.begin() + index);
+            newBag.push_back(choosePiece);
         }
 
-        return new_bag;
+        return newBag;
     }
 
     /// ѕредставление одного блока тетромино.
@@ -85,11 +88,11 @@ protected:
         /// ѕоворот блока вокруг заданного центра.
         /// \param center Ѕлок, вокруг которого происходит поворот.
         /// \param direction Ќаправление поворота: положительное Ч по часовой стрелке, отрицательное Ч против.
-        void Rotate(Piece center, int direction) {
-            int x = this->y - center.y;
-            int y = this->x - center.x;
-            this->x = center.x + (x * -direction);
-            this->y = center.y + (y * direction);
+        void rotate(Piece center, int direction) {
+            int offsetX = this->y - center.y;
+            int offsetY = this->x - center.x;
+            this->x = center.x + (offsetX * -direction);
+            this->y = center.y + (offsetY * direction);
 
             this->rotation += direction;
 
@@ -100,7 +103,7 @@ protected:
 
 
     /// ћассив, представл€ющий текущее тетромино, кэш и "призрак" (визуальна€ подсказка).
-    Piece piece[4], cache[4], ghost[4];
+    Piece currentPiece[4], previousPiecePosition[4], ghost[4];
 
     /// ƒвумерный массив, задающий координаты блоков дл€ каждого типа тетромино.
     ///  аждый тетромино представлен набором из 4 блоков.
@@ -128,7 +131,7 @@ protected:
     };
 
     /// ¬ектор заблокированных тетромино на игровом поле.
-    std::vector<std::vector<PieceLock>> pieces_lock;
+    std::vector<std::vector<PieceLock>> piecesLock;
 
     /// ѕредставление частицы дл€ визуальных эффектов (например, взрывов).
     class Particle {
@@ -164,13 +167,13 @@ protected:
         sf::RectangleShape shape;
 
         /// ќбновление позиции и прозрачности частицы на основе времени кадра.
-        /// \param time_per_frame ¬рем€ в секундах с момента последнего обновлени€ кадра.
-        void update(double time_per_frame) {
+        /// \param timePerFrame ¬рем€ в секундах с момента последнего обновлени€ кадра.
+        void update(double timePerFrame) {
             double angle = this->direction * (cos(-1) / 180);
-            this->x += this->speed * cos(angle) * time_per_frame;
-            this->y += this->speed * sin(angle) * time_per_frame;
-            this->alpha -= 400 * time_per_frame;
-            this->speed += 100 * ((-this->speed) / 15) * time_per_frame;
+            this->x += this->speed * cos(angle) * timePerFrame;
+            this->y += this->speed * sin(angle) * timePerFrame;
+            this->alpha -= 400 * timePerFrame;
+            this->speed += 100 * ((-this->speed) / 15) * timePerFrame;
         }
 
         /// ќтрисовка частицы в игровом окне.
@@ -200,8 +203,8 @@ protected:
     void createParticle(std::vector<Particle>* particles) {
         for (int i = 0; i < 4; i++) {
             /// √енераци€ новой частицы с случайными координатами и направлением движени€.
-            Particle particle((piece[i].x * 30) + 150 + 15 + (rand() % 60 - 30),
-                (piece[i].y * 30) - 60 - 30,
+            Particle particle((currentPiece[i].x * 30) + 150 + 15 + (rand() % 60 - 30),
+                (currentPiece[i].y * 30) - 60 - 30,
                 rand() % 250 + 150,
                 270 + (rand() % 60 - 30));
             particles->push_back(particle);
@@ -213,8 +216,12 @@ protected:
     /// \return True, если нет столкновени€, иначе False.
     bool isCollidedGhost() {
         for (int i = 0; i < 4; i++) {
-            if (ghost[i].y >= HEIGHT) return false;
-            else if (board[ghost[i].y][ghost[i].x]) return false;
+            if (ghost[i].y >= HEIGHT) {
+                return false;
+            }
+            else if (board[ghost[i].y][ghost[i].x]) {
+                return false;
+            }
         }
         return true;
     }
@@ -224,9 +231,13 @@ protected:
     bool isCollided() {
         for (int i = 0; i < 4; i++) {
             /// ѕроверка выхода за границы игрового пол€.
-            if (piece[i].x < 0 || piece[i].x >= WIDTH || piece[i].y >= HEIGHT) return false;
+            if (currentPiece[i].x < 0 || currentPiece[i].x >= WIDTH || currentPiece[i].y >= HEIGHT) {
+                return false;
+            }
             /// ѕроверка на наличие блока в занимаемой позиции.
-            else if (board[piece[i].y][piece[i].x]) return false;
+            else if (board[currentPiece[i].y][currentPiece[i].x]) {
+                return false;
+            }
         }
         return true;
     }
@@ -235,7 +246,7 @@ protected:
     /// \return True, если игра закончена, иначе False.
     bool isDead() {
         for (int i = 0; i < 4; i++) {
-            if (board[piece[i].y][piece[i].x]) return true;
+            if (board[currentPiece[i].y][currentPiece[i].x]) return true;
         }
         return false;
     }
