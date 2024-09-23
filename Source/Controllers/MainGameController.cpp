@@ -1,13 +1,19 @@
 #include "MainGameController.hpp"
 
-MainGameController::MainGameController() : mainMenuView() {}
+#include "MainGameController.hpp"
 
-MainGameController::~MainGameController() {}
+MainGameController::MainGameController()
+    : window(sf::VideoMode(800, 600), "Tetris Game"),  // Инициализация окна
+    gameWindowView(window),  // Передача окна в GameWindowView
+    leaderboard(),  // Инициализация таблицы лидеров
+    isGameOver(false),
+    isMenuActive(true)
+{
+    // Задание целевого фреймрейта
+    window.setFramerateLimit(FRAMERATE);
 
-/// Запуск основного игрового цикла.
-void MainGameController::runGame() {
-    sf::RenderWindow window(sf::VideoMode(600, 720), "Tetris");
-
+    // Инициализация других игровых элементов при необходимости
+}void MainGameController::runGame() {
     while (window.isOpen()) {
         sf::Event event;
         while (window.pollEvent(event)) {
@@ -20,43 +26,171 @@ void MainGameController::runGame() {
         }
 
         window.clear();
-        mainMenuView.draw(window);
+
+        // Отрисовка в зависимости от текущего состояния
+        switch (currentState) {
+        case GameState::MainMenu:
+            gameWindowView.drawMainMenu();
+            break;
+        case GameState::InGame:
+            startTetrisGame();
+            break;
+        case GameState::GamePause:
+            drawGamePause();
+            break;
+        case GameState::GameOver:
+            gameWindowView.drawGameOverMenu(leaderboard, 500);
+            break;
+        }
+
         window.display();
     }
 }
 
-/// Обрабатывает события главного меню.
-/// \param event Событие, которое требуется обработать.
+
 void MainGameController::handleMainMenuEvent(const sf::Event& event) {
-    if (event.type == sf::Event::MouseButtonPressed) {
-        if (mainMenuView.isStartButtonClicked(event.mouseButton.x, event.mouseButton.y)) {
-            startTetrisGame();
-            exit(0);
+    if (currentState == GameState::MainMenu) {
+        if (event.type == sf::Event::MouseButtonPressed) {
+            if (gameWindowView.isStartButtonClicked(event.mouseButton.x, event.mouseButton.y)) {
+                currentState = GameState::InGame;
+            }
+            else if (gameWindowView.isChangeColorButtonClicked(event.mouseButton.x, event.mouseButton.y)) {
+                std::cout << "Change color\n";
+            }
+            else if (gameWindowView.isLeaderboardButtonClicked(event.mouseButton.x, event.mouseButton.y)) {
+                std::cout << "isLeaderboardButtonClicked\n";
+            }
+            else if (gameWindowView.isExitButtonClicked(event.mouseButton.x, event.mouseButton.y)) {
+                std::cout << "Exit\n";
+                exit(0);
+            }
         }
-        else if (mainMenuView.isChangeColorButtonClicked(event.mouseButton.x, event.mouseButton.y)) {
-            std::cout << "Change color\n";
+        else if (event.type == sf::Event::MouseMoved) {
+            gameWindowView.handleMainMenuMouseMove(event.mouseMove.x, event.mouseMove.y, currentState);
         }
-        else if (mainMenuView.isLeaderboardButtonClicked(event.mouseButton.x, event.mouseButton.y)) {
-            std::cout << "Show leaderboard\n";
-        }
-        else if (mainMenuView.isExitButtonClicked(event.mouseButton.x, event.mouseButton.y)) {
-            std::cout << "Exit\n";
-            exit(0);
+        else if (event.type == sf::Event::KeyPressed) {
+            gameWindowView.handleMainMenuKeyboardInput(event);
         }
     }
-    else if (event.type == sf::Event::MouseMoved) {
-        mainMenuView.handleMouseMove(event.mouseMove.x, event.mouseMove.y);
-    }
-    else if (event.type == sf::Event::KeyPressed) {
-        mainMenuView.handleKeyboardInput(event);
+    else if (currentState == GameState::GameOver) {
+        if (gameWindowView.isGameOverReplayClicked(event.mouseButton.x, event.mouseButton.y)) {
+            currentState = GameState::InGame;
+        }
+        else if (gameWindowView.isGameOverToMainMenuClicked(event.mouseButton.x, event.mouseButton.y)) {
+            currentState = GameState::MainMenu;
+        }
     }
 }
 
 
+void MainGameController::drawGamePause() {
+    sf::RectangleShape background(sf::Vector2f(window.getSize().x, window.getSize().y));
+    background.setFillColor(sf::Color(0, 0, 0, 150));
+    window.draw(background);
+
+    window.draw(pauseContinueButton);
+    window.draw(pauseExitToMenuButton);
+    window.draw(pauseContinueText);
+    window.draw(pauseExitToMenuText);
+}
+
+void MainGameController::selectPauseButton(int index) {
+    switch (index) {
+    case 0:
+        hoveredButton = &pauseContinueButton;
+        break;
+    case 1:
+        hoveredButton = &pauseExitToMenuButton;
+        break;
+    default:
+        hoveredButton = nullptr;
+        break;
+    }
+    updatePauseButtonAppearance();
+}
+void MainGameController::updatePauseButtonAppearance() {
+    pauseContinueButton.setFillColor(hoveredButton == &pauseContinueButton ? palette.selectedButtonColor : palette.defaultButtonColor);
+    pauseExitToMenuButton.setFillColor(hoveredButton == &pauseExitToMenuButton ? palette.selectedButtonColor : palette.defaultButtonColor);
+
+    // Предполагается, что у тебя есть текстовые элементы для кнопок паузы
+    pauseContinueText.setFillColor(hoveredButton == &pauseContinueButton ? palette.selectedTextColor : palette.defaultTextColor);
+    pauseExitToMenuText.setFillColor(hoveredButton == &pauseExitToMenuButton ? palette.selectedTextColor : palette.defaultTextColor);
+}
 
 
 
-/// Запускает новую игру в Тетрис.
+std::vector<int> MainGameController::generateNewBag() {
+    std::vector<int> templateBag;
+
+    for (int i = 0; i < 7; i++) {
+        templateBag.push_back(i);
+    }
+
+    std::vector<int> newBag;
+
+    while (templateBag.size() > 0) {
+        int index = rand() % templateBag.size();
+        int choosePiece = templateBag.at(index);
+        templateBag.erase(templateBag.begin() + index);
+        newBag.push_back(choosePiece);
+    }
+
+    return newBag;
+}
+
+bool MainGameController::isCollided() {
+    for (int i = 0; i < 4; i++) {
+        /// Проверка выхода за границы игрового поля.
+        if (currentPiece[i].x < 0 || currentPiece[i].x >= WIDTH || currentPiece[i].y >= HEIGHT) {
+            return false;
+        }
+        /// Проверка на наличие блока в занимаемой позиции.
+        else if (board[currentPiece[i].y][currentPiece[i].x]) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool MainGameController::isCollidedGhost() {
+    for (int i = 0; i < 4; i++) {
+        if (ghost[i].y >= HEIGHT) {
+            return false;
+        }
+        else if (board[ghost[i].y][ghost[i].x]) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool MainGameController::isDead() {
+    for (int i = 0; i < 4; i++) {
+        if (board[currentPiece[i].y][currentPiece[i].x]) {
+            return true;
+        }
+    }
+    return false;
+}
+
+void MainGameController::createParticle(std::vector<Particle>* particles) {
+    for (int i = 0; i < 4; i++) {
+        /// Генерация новой частицы с случайными координатами и направлением движения.
+        Particle particle((currentPiece[i].x * 30) + 150 + 15 + (rand() % 60 - 30),
+            (currentPiece[i].y * 30) - 60 - 30,
+            rand() % 250 + 150,
+            270 + (rand() % 60 - 30));
+        particles->push_back(particle);
+    }
+}
+
+int MainGameController::sign(int num) {
+    if (num < 0) return -1;
+    else if (num > 0) return 1;
+    else return 0;
+}
+
+
 void MainGameController::startTetrisGame() {
     sf::RenderWindow gameWindow(sf::VideoMode(600, 720), "Tetris");
     srand(static_cast<unsigned int>(time(0)));  // Инициализация генератора случайных чисел
@@ -214,7 +348,15 @@ restart:
         // управляет логикой блокировки тетромино и обрабатывает события управления.
         while (gameWindow.isOpen()) {
             float elapsedTime = trackingFrameTime.getElapsedTime().asSeconds();
-
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
+                drawGamePause();
+            }
+            
+            if (sf::Event::Closed) {
+                currentState = GameState::MainMenu;
+                isGameOver = true;
+                gameWindow.close();
+            }
             for (int i = 0; i < 4; i++) {
                 previousPiecePosition[i] = currentPiece[i];
                 currentPiece[i].y++;
@@ -246,6 +388,7 @@ restart:
             trackingFrameTime.restart();
 
             sf::Event e;
+          
             while (gameWindow.pollEvent(e)) {
                 if (e.type == sf::Event::GainedFocus) {
                     isOnFocus = true;
@@ -278,14 +421,14 @@ restart:
                     }
                 }
 
-                if (e.type == sf::Event::Closed) {
+               /* if (e.type == sf::Event::Closed) {
+                    currentState = GameState::MainMenu;
+                    isGameOver = true;
                     gameWindow.close();
-                }
+                }*/
             }
 
             if (isOnFocus) {
-
-                //Key Fixed
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::C) && isHoldPiece == 0) {
                     isHoldPiece = -1;
                     holded = 1;
@@ -321,6 +464,8 @@ restart:
                     goto restart;
                 }
 
+               
+
                 /// \brief Проверяет, проиграл ли игрок, и обрабатывает ускоренное падение.
                 ///
                 /// Эта часть кода проверяет, находится ли игрок в "мертвом" состоянии 
@@ -338,7 +483,9 @@ restart:
                 /// Управление клавишами:
                 /// - Стрелка вниз: Ускоренное падение фигуры.
                 if (isDead()) {
-                    goto restart;  // Если игрок мертв, игра перезапускается
+                    currentState = GameState::GameOver;
+                    isGameOver = true;
+                    gameWindow.close();
                 }
 
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
@@ -1351,19 +1498,19 @@ restart:
                 text.setPosition(475, 650);
                 if (lineClearCombo - 1 > 0) gameWindow.draw(text);
 
-                sf::RectangleShape text_box;
+                sf::RectangleShape textBox;
                 sf::Rect textRectangle = text.getLocalBounds();;
-                text_box.setFillColor(sf::Color::White);
+                textBox.setFillColor(sf::Color::White);
 
                 text.setFillColor(sf::Color::Black);
                 text.setCharacterSize(25);
                 text.setString("LINES");
                 textRectangle = text.getLocalBounds();
                 text.setPosition(120 - textRectangle.width, 400 + boardWobble);
-                text_box.setSize(sf::Vector2f(textRectangle.width + 40, textRectangle.height * 2 - 4));
-                text_box.setOrigin(sf::Vector2f(20, 0));
-                text_box.setPosition(text.getPosition());
-                gameWindow.draw(text_box);
+                textBox.setSize(sf::Vector2f(textRectangle.width + 40, textRectangle.height * 2 - 4));
+                textBox.setOrigin(sf::Vector2f(20, 0));
+                textBox.setPosition(text.getPosition());
+                gameWindow.draw(textBox);
                 gameWindow.draw(text);
 
                 text.setFillColor(sf::Color::White);
@@ -1378,10 +1525,10 @@ restart:
                 text.setString("PIECES");
                 textRectangle = text.getLocalBounds();
                 text.setPosition(120 - textRectangle.width, 510 + boardWobble);
-                text_box.setSize(sf::Vector2f(textRectangle.width + 40, textRectangle.height * 2 - 4));
-                text_box.setOrigin(sf::Vector2f(20, 0));
-                text_box.setPosition(text.getPosition());
-                gameWindow.draw(text_box);
+                textBox.setSize(sf::Vector2f(textRectangle.width + 40, textRectangle.height * 2 - 4));
+                textBox.setOrigin(sf::Vector2f(20, 0));
+                textBox.setPosition(text.getPosition());
+                gameWindow.draw(textBox);
                 gameWindow.draw(text);
 
                 text.setFillColor(sf::Color::White);

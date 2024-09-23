@@ -4,12 +4,20 @@ project(Tetris_SFML)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+if(DEFINED ENV{VCPKG_ROOT})
+    set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "Vcpkg toolchain file")
+else()
+    message(FATAL_ERROR "VCPKG_ROOT environment variable is not defined")
+endif()
+
 find_package(SFML 2.6 COMPONENTS system window graphics REQUIRED)
 if(NOT DEFINED ENV{SFML_ROOT})
   message(FATAL_ERROR "is not found")
 else()
   set(SFML_DIR "$ENV{SFML_ROOT}/lib/cmake/SFML")
 endif()
+
+find_package(nlohmann_json REQUIRED)
 
 add_executable(Tetris_SFML
 Source/Main.cpp
@@ -18,13 +26,17 @@ Source/Controllers/MainGameController.cpp
 Source/Utils/ColorPalette.hpp
 Source/Views/MainMenuView.hpp
 Source/Views/MainMenuView.cpp
+Source/Views/GameWindowView.hpp
+Source/Views/GameWindowView.cpp
+Source/Utils/LeaderBoard.hpp
+Source/Utils/LeaderBoard.cpp
 )
 
 target_link_libraries(Tetris_SFML
 sfml-system
 sfml-window
 sfml-graphics
-sfml-audio
+nlohmann_json::nlohmann_json
 )
 
 target_compile_definitions(Tetris_SFML PRIVATE RESOURCE_DIR="${CMAKE_SOURCE_DIR}/Resources")
