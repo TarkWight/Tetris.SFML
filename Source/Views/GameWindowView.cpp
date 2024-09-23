@@ -66,12 +66,8 @@ GameWindowView::GameWindowView(sf::RenderWindow& window)
     gameOverToMainMenuText.setFillColor(palette.defaultTextColor);
     gameOverToMainMenuText.setPosition(300, 500);
 
-    
-
-    // Выбор кнопки в главном меню по умолчанию
     selectMainMenuButton(selectedButtonIndex);
 }
-
 
 void GameWindowView::initializeButtons() {
     mainMenuStartButton.setSize(sf::Vector2f(200, 50));
@@ -111,7 +107,6 @@ void GameWindowView::setupText() {
     playerNameText.setFillColor(sf::Color::Black);
     playerNameText.setPosition(inputField.getPosition().x + 10, inputField.getPosition().y + 10);
     playerNameText.setString(playerName.empty() ? "Enrer the name" : playerName);
-  
 }
 void GameWindowView::drawMainMenu() {
     window.clear(palette.background);
@@ -176,8 +171,7 @@ void GameWindowView::handleMainMenuKeyboardInput(const sf::Event& event) {
         if (event.key.code == sf::Keyboard::Up) {
             selectedButtonIndex = (selectedButtonIndex + 3) % 4;
             selectMainMenuButton(selectedButtonIndex);
-        }
-        else if (event.key.code == sf::Keyboard::Down) {
+        } else if (event.key.code == sf::Keyboard::Down) {
             selectedButtonIndex = (selectedButtonIndex + 1) % 4;
             selectMainMenuButton(selectedButtonIndex);
         } else if (event.type == sf::Keyboard::Enter) {
