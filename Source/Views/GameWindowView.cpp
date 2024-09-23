@@ -1,17 +1,13 @@
 #include "GameWindowView.hpp"
 
-
 GameWindowView::GameWindowView(sf::RenderWindow& window)
-    : window(window), palette(), hoveredButton(nullptr), selectedButtonIndex(0), playerName(""), isInputActive(false) {
+    : window(window), palette(), hoveredButton(nullptr), selectedButtonIndex(0) {
     initializeButtons();
-    initializeInputField();
-    setupText();
 
     if (!font.loadFromFile(resourcePath + "/Fonts/ShoraiSansStdNVar.ttf")) {
         throw std::runtime_error("Failed to load Fonts for GameWindowView");
     }
 
-    
     sf::Text::Style boldStyle = sf::Text::Bold;
 
     mainMenuStartText.setFont(font);
@@ -32,16 +28,6 @@ GameWindowView::GameWindowView(sf::RenderWindow& window)
     mainMenuChangeColorText.setPosition(
         (mainMenuChangeColorButton.getPosition().x + (mainMenuChangeColorButton.getSize().x - mainMenuChangeColorText.getLocalBounds().width) / 2),
         (mainMenuChangeColorButton.getPosition().y + (mainMenuChangeColorButton.getSize().y - mainMenuChangeColorText.getLocalBounds().height) / 2)
-    );
-
-    mainMenuLeaderboardText.setFont(font);
-    mainMenuLeaderboardText.setString("Leaderboard");
-    mainMenuLeaderboardText.setCharacterSize(24);
-    mainMenuLeaderboardText.setFillColor(palette.defaultTextColor);
-    mainMenuLeaderboardText.setStyle(boldStyle);
-    mainMenuLeaderboardText.setPosition(
-        (mainMenuLeaderboardButton.getPosition().x + (mainMenuLeaderboardButton.getSize().x - mainMenuLeaderboardText.getLocalBounds().width) / 2),
-        (mainMenuLeaderboardButton.getPosition().y + (mainMenuLeaderboardButton.getSize().y - mainMenuLeaderboardText.getLocalBounds().height) / 2)
     );
 
     mainMenuExitText.setFont(font);
@@ -70,59 +56,44 @@ GameWindowView::GameWindowView(sf::RenderWindow& window)
 }
 
 void GameWindowView::initializeButtons() {
-    mainMenuStartButton.setSize(sf::Vector2f(200, 50));
-    mainMenuStartButton.setPosition(300, 150);
+    float buttonWidth = 200;
+    float buttonHeight = 50;
+    float buttonSpacing = 20;
+
+    float centerX = (window.getSize().x - buttonWidth) / 2;
+
+    mainMenuStartButton.setSize(sf::Vector2f(buttonWidth, buttonHeight));
+    mainMenuStartButton.setPosition(centerX, 150);
     mainMenuStartButton.setFillColor(palette.defaultButtonColor);
 
-    mainMenuChangeColorButton.setSize(sf::Vector2f(200, 50));
-    mainMenuChangeColorButton.setPosition(300, 220);
+    mainMenuChangeColorButton.setSize(sf::Vector2f(buttonWidth, buttonHeight));
+    mainMenuChangeColorButton.setPosition(centerX, 150 + buttonHeight + buttonSpacing);
     mainMenuChangeColorButton.setFillColor(palette.defaultButtonColor);
 
-    mainMenuLeaderboardButton.setSize(sf::Vector2f(200, 50));
-    mainMenuLeaderboardButton.setPosition(300, 290);
-    mainMenuLeaderboardButton.setFillColor(palette.defaultButtonColor);
-
-    mainMenuExitButton.setSize(sf::Vector2f(200, 50));
-    mainMenuExitButton.setPosition(300, 360);
+    mainMenuExitButton.setSize(sf::Vector2f(buttonWidth, buttonHeight));
+    mainMenuExitButton.setPosition(centerX, 150 + 2 * (buttonHeight + buttonSpacing));
     mainMenuExitButton.setFillColor(palette.defaultButtonColor);
 
-    gameOverReplayButton.setSize(sf::Vector2f(200, 50));
-    gameOverReplayButton.setPosition(300, 450);
+    gameOverReplayButton.setSize(sf::Vector2f(buttonWidth, buttonHeight));
+    gameOverReplayButton.setPosition(centerX, 450);
     gameOverReplayButton.setFillColor(palette.defaultButtonColor);
 
-    gameOverToMainMenuButton.setSize(sf::Vector2f(200, 50));
-    gameOverToMainMenuButton.setPosition(300, 500);
+    gameOverToMainMenuButton.setSize(sf::Vector2f(buttonWidth, buttonHeight));
+    gameOverToMainMenuButton.setPosition(centerX, 450 + buttonHeight + buttonSpacing);
     gameOverToMainMenuButton.setFillColor(palette.defaultButtonColor);
 }
 
-void GameWindowView::initializeInputField() {
-    inputField.setSize(sf::Vector2f(200, 50));
-    inputField.setPosition(50, 600); 
-    inputField.setFillColor(palette.textField);
-}
 
-void GameWindowView::setupText() {
-    playerNameText.setFont(font);
-    playerNameText.setCharacterSize(24);
-    playerNameText.setFillColor(sf::Color::Black);
-    playerNameText.setPosition(inputField.getPosition().x + 10, inputField.getPosition().y + 10);
-    playerNameText.setString(playerName.empty() ? "Enrer the name" : playerName);
-}
 void GameWindowView::drawMainMenu() {
     window.clear(palette.background);
     window.draw(mainMenuStartButton);
     window.draw(mainMenuChangeColorButton);
-    window.draw(mainMenuLeaderboardButton);
     window.draw(mainMenuExitButton);
     window.draw(mainMenuStartText);
     window.draw(mainMenuChangeColorText);
-    window.draw(mainMenuLeaderboardText);
     window.draw(mainMenuExitText);
-
-    window.draw(inputField);
-    setupText();
-    window.draw(playerNameText);
 }
+
 void GameWindowView::handleMainMenuMouseMove(int mouseX, int mouseY, GameState gameState) {
     if (gameState != GameState::MainMenu) {
         return;
@@ -136,17 +107,9 @@ void GameWindowView::handleMainMenuMouseMove(int mouseX, int mouseY, GameState g
         hoveredButton = &mainMenuChangeColorButton;
         selectedButtonIndex = 1;
     }
-    else if (mainMenuLeaderboardButton.getGlobalBounds().contains(mouseX, mouseY)) {
-        hoveredButton = &mainMenuLeaderboardButton;
-        selectedButtonIndex = 2;
-    }
     else if (mainMenuExitButton.getGlobalBounds().contains(mouseX, mouseY)) {
         hoveredButton = &mainMenuExitButton;
-        selectedButtonIndex = 3;
-    }
-    else if (inputField.getGlobalBounds().contains(mouseX, mouseY)) {
-        isInputActive = true;
-        hoveredButton = &inputField;
+        selectedButtonIndex = 2;
     }
     else {
         hoveredButton = nullptr;
@@ -156,44 +119,33 @@ void GameWindowView::handleMainMenuMouseMove(int mouseX, int mouseY, GameState g
 }
 
 void GameWindowView::handleMainMenuKeyboardInput(const sf::Event& event) {
-    if (isInputActive) { 
-        if (event.type == sf::Event::TextEntered) { 
-            if (event.text.unicode < 128 && event.text.unicode != '\b') { 
-                playerName += static_cast<char>(event.text.unicode);
-            }
-            else if (event.text.unicode == '\b' && !playerName.empty()) { 
-                playerName.pop_back();
-            }
-        }
-    }
-
     if (event.type == sf::Event::KeyPressed) {
         if (event.key.code == sf::Keyboard::Up) {
-            selectedButtonIndex = (selectedButtonIndex + 3) % 4;
+            selectedButtonIndex = (selectedButtonIndex + 2) % 3;
             selectMainMenuButton(selectedButtonIndex);
-        } else if (event.key.code == sf::Keyboard::Down) {
-            selectedButtonIndex = (selectedButtonIndex + 1) % 4;
+        }
+        else if (event.key.code == sf::Keyboard::Down) {
+            selectedButtonIndex = (selectedButtonIndex + 1) % 3;
             selectMainMenuButton(selectedButtonIndex);
-        } else if (event.type == sf::Keyboard::Enter) {
+        }
+        else if (event.type == sf::Keyboard::Enter) {
             selectMainMenuButton(selectedButtonIndex);
         }
     }
-    
 }
-
 
 bool GameWindowView::isStartButtonClicked(int mouseX, int mouseY) {
     return mainMenuStartButton.getGlobalBounds().contains(mouseX, mouseY);
 }
+
 bool GameWindowView::isChangeColorButtonClicked(int mouseX, int mouseY) {
     return mainMenuChangeColorButton.getGlobalBounds().contains(mouseX, mouseY);
 }
-bool GameWindowView::isLeaderboardButtonClicked(int mouseX, int mouseY) {
-    return mainMenuLeaderboardButton.getGlobalBounds().contains(mouseX, mouseY);
-}
+
 bool GameWindowView::isExitButtonClicked(int mouseX, int mouseY) {
     return mainMenuExitButton.getGlobalBounds().contains(mouseX, mouseY);
 }
+
 void GameWindowView::selectMainMenuButton(int index) {
     switch (index) {
     case 0:
@@ -203,9 +155,6 @@ void GameWindowView::selectMainMenuButton(int index) {
         hoveredButton = &mainMenuChangeColorButton;
         break;
     case 2:
-        hoveredButton = &mainMenuLeaderboardButton;
-        break;
-    case 3:
         hoveredButton = &mainMenuExitButton;
         break;
     default:
@@ -214,15 +163,14 @@ void GameWindowView::selectMainMenuButton(int index) {
     }
     updateMainMenuButtonAppearance();
 }
+
 void GameWindowView::updateMainMenuButtonAppearance() {
     mainMenuStartButton.setFillColor(hoveredButton == &mainMenuStartButton ? palette.selectedButtonColor : palette.defaultButtonColor);
     mainMenuChangeColorButton.setFillColor(hoveredButton == &mainMenuChangeColorButton ? palette.selectedButtonColor : palette.defaultButtonColor);
-    mainMenuLeaderboardButton.setFillColor(hoveredButton == &mainMenuLeaderboardButton ? palette.selectedButtonColor : palette.defaultButtonColor);
     mainMenuExitButton.setFillColor(hoveredButton == &mainMenuExitButton ? palette.selectedButtonColor : palette.defaultButtonColor);
 
     mainMenuStartText.setFillColor(hoveredButton == &mainMenuStartButton ? palette.selectedTextColor : palette.defaultTextColor);
     mainMenuChangeColorText.setFillColor(hoveredButton == &mainMenuChangeColorButton ? palette.selectedTextColor : palette.defaultTextColor);
-    mainMenuLeaderboardText.setFillColor(hoveredButton == &mainMenuLeaderboardButton ? palette.selectedTextColor : palette.defaultTextColor);
     mainMenuExitText.setFillColor(hoveredButton == &mainMenuExitButton ? palette.selectedTextColor : palette.defaultTextColor);
 }
 
@@ -325,7 +273,6 @@ void GameWindowView::updateGameOverButtonAppearance() {
     gameOverReplayButton.setFillColor(hoveredButton == &gameOverReplayButton ? palette.selectedButtonColor : palette.defaultButtonColor);
     gameOverToMainMenuButton.setFillColor(hoveredButton == &gameOverToMainMenuButton ? palette.selectedButtonColor : palette.defaultButtonColor);
 
-    // Предполагается, что у тебя есть текстовые элементы для кнопок геймовера
     gameOverReplayText.setFillColor(hoveredButton == &gameOverReplayButton ? palette.selectedTextColor : palette.defaultTextColor);
     gameOverToMainMenuText.setFillColor(hoveredButton == &gameOverToMainMenuButton ? palette.selectedTextColor : palette.defaultTextColor);
 }

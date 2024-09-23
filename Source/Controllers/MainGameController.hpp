@@ -40,7 +40,6 @@ protected:
     int score = 0;
     bool isGameOver = false;
     std::string resourcePath = RESOURCE_DIR;
-    //bool isMenuActive = true;
     int board[HEIGHT][WIDTH] = { 0 };
 
     Piece currentPiece[4]{}, previousPiecePosition[4]{}, ghost[4]{};
@@ -65,6 +64,13 @@ protected:
     void createParticle(std::vector<Particle>* particles);
     int sign(int num);
     int calculateScore(int lineClearCount, int combo);
+
+    void swapTextures();
+
+    std::string texturePiecePath = resourcePath + "/Sprites/jstris1.png";
+    std::string textureGhostPath = resourcePath + "/Sprites/ghost.png";
+    
+    int textureSize = 30;
 };
 
 #endif // MAINGAMECONTROLLER_HPP

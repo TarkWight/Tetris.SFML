@@ -33,7 +33,7 @@ MainGameController::MainGameController()
             break;
         case GameState::GameOver:
             gameWindowView.drawGameOverMenu(leaderboard, score);
-            leaderboard.addScore(gameWindowView.playerName, score);
+            leaderboard.addScore("Игрок захардкожен", score);
             break;
         }
 
@@ -50,22 +50,20 @@ void MainGameController::handleMainMenuEvent(const sf::Event& event) {
                     currentState = GameState::InGame;
                     break;
                 case 1:
-                    std::cout << "Change color\n";
+                    swapTextures();
                     break;
-                case 2:
-                    std::cout << "isLeaderboardButtonClicked\n";
-                    break;
-                case 3:
+                case 2: 
                     std::cout << "Exit\n";
                     exit(0);
                 }
-            } else if (gameWindowView.isStartButtonClicked(event.mouseButton.x, event.mouseButton.y)) {
+            }
+            else if (gameWindowView.isStartButtonClicked(event.mouseButton.x, event.mouseButton.y)) {
                 currentState = GameState::InGame;
-            } else if (gameWindowView.isChangeColorButtonClicked(event.mouseButton.x, event.mouseButton.y)) {
-                std::cout << "Change color\n";
-            } else if (gameWindowView.isLeaderboardButtonClicked(event.mouseButton.x, event.mouseButton.y)) {
-                std::cout << "isLeaderboardButtonClicked\n";
-            } else if (gameWindowView.isExitButtonClicked(event.mouseButton.x, event.mouseButton.y)) {
+            }
+            else if (gameWindowView.isChangeColorButtonClicked(event.mouseButton.x, event.mouseButton.y)) {
+                swapTextures(); 
+            }
+            else if (gameWindowView.isExitButtonClicked(event.mouseButton.x, event.mouseButton.y)) {
                 std::cout << "Exit\n";
                 exit(0);
             }
@@ -87,7 +85,10 @@ void MainGameController::handleMainMenuEvent(const sf::Event& event) {
     }
 }
 
-
+void MainGameController::swapTextures() {
+    std::swap(textureGhostPath, texturePiecePath);
+    std::cout << "Textures swapped!\n";
+}
 std::vector<int> MainGameController::generateNewBag() {
     std::vector<int> templateBag;
 
@@ -170,17 +171,16 @@ int MainGameController::calculateScore(int lineClearCount, int combo) {
 void MainGameController::startTetrisGame() {
     sf::RenderWindow gameWindow(sf::VideoMode(600, 720), "Tetris");
     srand(static_cast<unsigned int>(time(0))); 
-
-    sf::Texture texturePiece;
-    texturePiece.loadFromFile(resourcePath + "/Sprites/jstris1.png");
-    int textureSize = 30;
-    sf::Sprite spritePiece(texturePiece);
-    spritePiece.setTextureRect(sf::IntRect(0, 0, textureSize, textureSize));
-
+    
     sf::Texture textureGhost;
-    textureGhost.loadFromFile(resourcePath + "/Sprites/ghost.png");
+    textureGhost.loadFromFile(textureGhostPath);
     sf::Sprite spriteGhost(textureGhost);
     spriteGhost.setTextureRect(sf::IntRect(0, 0, textureSize, textureSize));
+
+    sf::Texture texturePiece;
+    texturePiece.loadFromFile(texturePiecePath);
+    sf::Sprite spritePiece(texturePiece);
+    spritePiece.setTextureRect(sf::IntRect(0, 0, textureSize, textureSize));
 
     sf::Texture textureLockedPiece;
     textureLockedPiece.loadFromFile(resourcePath + "/Sprites/piece_lock.png");

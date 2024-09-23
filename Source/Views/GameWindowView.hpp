@@ -6,7 +6,6 @@
 #include "../Utils/LeaderBoard.hpp"
 #include "../Utils/GameStates.hpp"
 
-/// Класс GameWindowView отвечает за отображение главного меню игры и обработку событий.
 class GameWindowView {
 public:
     GameWindowView(sf::RenderWindow& window);
@@ -27,33 +26,26 @@ public:
 
     bool isStartButtonClicked(int mouseX, int mouseY);
     bool isChangeColorButtonClicked(int mouseX, int mouseY);
-    bool isLeaderboardButtonClicked(int mouseX, int mouseY);
     bool isExitButtonClicked(int mouseX, int mouseY);
     bool isGameOverReplayClicked(int mouseX, int mouseY);
     bool isGameOverToMainMenuClicked(int mouseX, int mouseY);
     bool isPauseContinueClicked(int mouseX, int mouseY);
     bool isPauseExitToMenuClicked(int mouseX, int mouseY);
     int selectedButtonIndex;
-    std::string playerName;
 private:
     sf::RenderWindow& window;
     
     sf::RectangleShape mainMenuStartButton;
     sf::RectangleShape mainMenuChangeColorButton;
-    sf::RectangleShape mainMenuLeaderboardButton;
     sf::RectangleShape mainMenuExitButton;
 
     sf::RectangleShape gameOverReplayButton;
     sf::RectangleShape gameOverToMainMenuButton;
 
-    sf::RectangleShape inputField;
-    sf::RectangleShape saveButton;
-    sf::Text playerNameText;
 
     sf::Font font;
     sf::Text mainMenuStartText;
     sf::Text mainMenuChangeColorText;
-    sf::Text mainMenuLeaderboardText;
     sf::Text mainMenuExitText;
 
     sf::Text gameOverReplayText;
@@ -62,12 +54,9 @@ private:
     ColorPalette palette;
     sf::RectangleShape* hoveredButton;
    
-    bool isInputActive;
     std::string resourcePath = RESOURCE_DIR;
 
     void initializeButtons();
-    void initializeInputField();
-    void setupText();
 
     void updateMainMenuButtonAppearance();
     void selectMainMenuButton(int index);
