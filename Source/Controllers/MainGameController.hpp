@@ -14,16 +14,16 @@
 #include <thread>
 #include <vector>
 
-/// Ширина игрового поля Тетриса в блоках.
+/// РЁРёСЂРёРЅР° РёРіСЂРѕРІРѕРіРѕ РїРѕР»СЏ РўРµС‚СЂРёСЃР° РІ Р±Р»РѕРєР°С….
 const int WIDTH = 10;
 
-/// Высота игрового поля Тетриса в блоках.
+/// Р’С‹СЃРѕС‚Р° РёРіСЂРѕРІРѕРіРѕ РїРѕР»СЏ РўРµС‚СЂРёСЃР° РІ Р±Р»РѕРєР°С….
 const int HEIGHT = 25;
 
-/// Целевой фреймрейт для игрового цикла.
+/// Р¦РµР»РµРІРѕР№ С„СЂРµР№РјСЂРµР№С‚ РґР»СЏ РёРіСЂРѕРІРѕРіРѕ С†РёРєР»Р°.
 const int FRAMERATE = 75;
 
-/// Определения для различных типов тетромино.
+/// РћРїСЂРµРґРµР»РµРЅРёСЏ РґР»СЏ СЂР°Р·Р»РёС‡РЅС‹С… С‚РёРїРѕРІ С‚РµС‚СЂРѕРјРёРЅРѕ.
 constexpr auto Z_TETROMINO = 0;
 constexpr auto L_TETROMINO = 1;
 constexpr auto O_TETROMINO = 2;
@@ -32,12 +32,12 @@ constexpr auto I_TETROMINO = 4;
 constexpr auto J_TETROMINO = 5;
 constexpr auto T_TETROMINO = 6;
 
-/// Главный контроллер для управления игровой логикой и событиями.
+/// Р“Р»Р°РІРЅС‹Р№ РєРѕРЅС‚СЂРѕР»Р»РµСЂ РґР»СЏ СѓРїСЂР°РІР»РµРЅРёСЏ РёРіСЂРѕРІРѕР№ Р»РѕРіРёРєРѕР№ Рё СЃРѕР±С‹С‚РёСЏРјРё.
 class MainGameController {
 public:
     MainGameController();
 
-    /// Запуск основного игрового цикла.
+    /// Р—Р°РїСѓСЃРє РѕСЃРЅРѕРІРЅРѕРіРѕ РёРіСЂРѕРІРѕРіРѕ С†РёРєР»Р°.
     void runGame();
 
 protected:
@@ -46,7 +46,7 @@ protected:
     GameWindowView gameWindowView;
     GameState currentState = GameState::MainMenu;
    
-
+    int score = 0;
     bool isGameOver = false;
     std::string resourcePath = RESOURCE_DIR;
     bool isMenuActive = true;
@@ -56,13 +56,13 @@ protected:
     std::vector<std::vector<PieceLock>> piecesLock;
     std::vector<Particle> particles;
     int pieces[7][4] = {
-    {3, 4, 5, 6},   ///< Z-образное тетромино
-    {2, 4, 6, 7},   ///< L-образное тетромино
-    {2, 3, 4, 5},   ///< O-образное тетромино (квадрат)
-    {2, 4, 5, 7},   ///< S-образное тетромино
-    {1, 3, 5, 7},   ///< I-образное тетромино (линия)
-    {3, 5, 6, 7},   ///< J-образное тетромино
-    {2, 4, 5, 6}    ///< T-образное тетромино
+    {3, 4, 5, 6},   ///< Z-РѕР±СЂР°Р·РЅРѕРµ С‚РµС‚СЂРѕРјРёРЅРѕ
+    {2, 4, 6, 7},   ///< L-РѕР±СЂР°Р·РЅРѕРµ С‚РµС‚СЂРѕРјРёРЅРѕ
+    {2, 3, 4, 5},   ///< O-РѕР±СЂР°Р·РЅРѕРµ С‚РµС‚СЂРѕРјРёРЅРѕ (РєРІР°РґСЂР°С‚)
+    {2, 4, 5, 7},   ///< S-РѕР±СЂР°Р·РЅРѕРµ С‚РµС‚СЂРѕРјРёРЅРѕ
+    {1, 3, 5, 7},   ///< I-РѕР±СЂР°Р·РЅРѕРµ С‚РµС‚СЂРѕРјРёРЅРѕ (Р»РёРЅРёСЏ)
+    {3, 5, 6, 7},   ///< J-РѕР±СЂР°Р·РЅРѕРµ С‚РµС‚СЂРѕРјРёРЅРѕ
+    {2, 4, 5, 6}    ///< T-РѕР±СЂР°Р·РЅРѕРµ С‚РµС‚СЂРѕРјРёРЅРѕ
     };
 
     std::vector<int> generateNewBag();
@@ -73,7 +73,7 @@ protected:
     bool isDead();
     void createParticle(std::vector<Particle>* particles);
     int sign(int num);
-
+    int calculateScore(int lineClearCount, int combo);
     sf::Font font;
     ColorPalette palette;
     sf::RectangleShape* hoveredButton;

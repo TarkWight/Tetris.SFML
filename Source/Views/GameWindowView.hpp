@@ -6,17 +6,18 @@
 #include "../Utils/LeaderBoard.hpp"
 #include "../Utils/GameStates.hpp"
 
-/// Класс GameWindowView отвечает за отображение главного меню игры и обработку событий.
+/// РљР»Р°СЃСЃ GameWindowView РѕС‚РІРµС‡Р°РµС‚ Р·Р° РѕС‚РѕР±СЂР°Р¶РµРЅРёРµ РіР»Р°РІРЅРѕРіРѕ РјРµРЅСЋ РёРіСЂС‹ Рё РѕР±СЂР°Р±РѕС‚РєСѓ СЃРѕР±С‹С‚РёР№.
 class GameWindowView {
 public:
     GameWindowView(sf::RenderWindow& window);
 
     void drawMainMenu();
     void drawGameOverMenu(const LeaderBoard& leaderboard, int currentScore);
-    
 
     void handleMainMenuMouseMove(int mouseX, int mouseY, GameState gameState);
     void handleMainMenuKeyboardInput(const sf::Event& event);
+    void handleInput(const sf::Event& event); 
+    void handleSaveButtonClick();
 
     void handlePauseMouseMove(int mouseX, int mouseY);
     void handlePauseKeyboardInput(const sf::Event& event);
@@ -32,10 +33,11 @@ public:
     bool isGameOverToMainMenuClicked(int mouseX, int mouseY);
     bool isPauseContinueClicked(int mouseX, int mouseY);
     bool isPauseExitToMenuClicked(int mouseX, int mouseY);
-
+    int selectedButtonIndex;
+    std::string playerName;
 private:
     sf::RenderWindow& window;
-
+    
     sf::RectangleShape mainMenuStartButton;
     sf::RectangleShape mainMenuChangeColorButton;
     sf::RectangleShape mainMenuLeaderboardButton;
@@ -44,6 +46,9 @@ private:
     sf::RectangleShape gameOverReplayButton;
     sf::RectangleShape gameOverToMainMenuButton;
 
+    sf::RectangleShape inputField;
+    sf::RectangleShape saveButton;
+    sf::Text playerNameText;
 
     sf::Font font;
     sf::Text mainMenuStartText;
@@ -54,15 +59,15 @@ private:
     sf::Text gameOverReplayText;
     sf::Text gameOverToMainMenuText;
 
-   
-
     ColorPalette palette;
     sf::RectangleShape* hoveredButton;
-    int selectedButtonIndex;
-
+   
+    bool isInputActive;
     std::string resourcePath = RESOURCE_DIR;
 
     void initializeButtons();
+    void initializeInputField();
+    void setupText();
 
     void updateMainMenuButtonAppearance();
     void selectMainMenuButton(int index);

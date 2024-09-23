@@ -1,7 +1,3 @@
-//
-// Created by Tark Wight on 08.08.2024.
-//
-
 #include "LeaderBoard.hpp"
 #include <fstream>
 #include <iostream>

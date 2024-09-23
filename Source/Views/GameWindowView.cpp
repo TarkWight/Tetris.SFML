@@ -1,39 +1,59 @@
 #include "GameWindowView.hpp"
 
+
 GameWindowView::GameWindowView(sf::RenderWindow& window)
-    : window(window), palette(), hoveredButton(nullptr), selectedButtonIndex(0) {
+    : window(window), palette(), hoveredButton(nullptr), selectedButtonIndex(0), playerName(""), isInputActive(false) {
     initializeButtons();
+    initializeInputField();
+    setupText();
 
     if (!font.loadFromFile(resourcePath + "/Fonts/ShoraiSansStdNVar.ttf")) {
         throw std::runtime_error("Failed to load Fonts for GameWindowView");
     }
 
     
+    sf::Text::Style boldStyle = sf::Text::Bold;
+
     mainMenuStartText.setFont(font);
     mainMenuStartText.setString("Start");
     mainMenuStartText.setCharacterSize(24);
     mainMenuStartText.setFillColor(palette.defaultTextColor);
-    mainMenuStartText.setPosition(mainMenuStartButton.getPosition().x + 10, mainMenuStartButton.getPosition().y + 10);
+    mainMenuStartText.setStyle(boldStyle);
+    mainMenuStartText.setPosition(
+        (mainMenuStartButton.getPosition().x + (mainMenuStartButton.getSize().x - mainMenuStartText.getLocalBounds().width) / 2),
+        (mainMenuStartButton.getPosition().y + (mainMenuStartButton.getSize().y - mainMenuStartText.getLocalBounds().height) / 2)
+    );
 
     mainMenuChangeColorText.setFont(font);
     mainMenuChangeColorText.setString("Change Color");
     mainMenuChangeColorText.setCharacterSize(24);
     mainMenuChangeColorText.setFillColor(palette.defaultTextColor);
-    mainMenuChangeColorText.setPosition(mainMenuChangeColorButton.getPosition().x + 10, mainMenuChangeColorButton.getPosition().y + 10);
+    mainMenuChangeColorText.setStyle(boldStyle);
+    mainMenuChangeColorText.setPosition(
+        (mainMenuChangeColorButton.getPosition().x + (mainMenuChangeColorButton.getSize().x - mainMenuChangeColorText.getLocalBounds().width) / 2),
+        (mainMenuChangeColorButton.getPosition().y + (mainMenuChangeColorButton.getSize().y - mainMenuChangeColorText.getLocalBounds().height) / 2)
+    );
 
     mainMenuLeaderboardText.setFont(font);
     mainMenuLeaderboardText.setString("Leaderboard");
     mainMenuLeaderboardText.setCharacterSize(24);
     mainMenuLeaderboardText.setFillColor(palette.defaultTextColor);
-    mainMenuLeaderboardText.setPosition(mainMenuLeaderboardButton.getPosition().x + 10, mainMenuLeaderboardButton.getPosition().y + 10);
+    mainMenuLeaderboardText.setStyle(boldStyle);
+    mainMenuLeaderboardText.setPosition(
+        (mainMenuLeaderboardButton.getPosition().x + (mainMenuLeaderboardButton.getSize().x - mainMenuLeaderboardText.getLocalBounds().width) / 2),
+        (mainMenuLeaderboardButton.getPosition().y + (mainMenuLeaderboardButton.getSize().y - mainMenuLeaderboardText.getLocalBounds().height) / 2)
+    );
 
     mainMenuExitText.setFont(font);
     mainMenuExitText.setString("Exit");
     mainMenuExitText.setCharacterSize(24);
     mainMenuExitText.setFillColor(palette.defaultTextColor);
-    mainMenuExitText.setPosition(mainMenuExitButton.getPosition().x + 10, mainMenuExitButton.getPosition().y + 10);
+    mainMenuExitText.setStyle(boldStyle);
+    mainMenuExitText.setPosition(
+        (mainMenuExitButton.getPosition().x + (mainMenuExitButton.getSize().x - mainMenuExitText.getLocalBounds().width) / 2),
+        (mainMenuExitButton.getPosition().y + (mainMenuExitButton.getSize().y - mainMenuExitText.getLocalBounds().height) / 2)
+    );
 
-    // Настройка текста для меню геймовера
     gameOverReplayText.setFont(font);
     gameOverReplayText.setString("Restart");
     gameOverReplayText.setCharacterSize(24);
@@ -48,7 +68,7 @@ GameWindowView::GameWindowView(sf::RenderWindow& window)
 
     
 
-    // Выбор кнопки в главном меню по умолчанию
+    // Р’С‹Р±РѕСЂ РєРЅРѕРїРєРё РІ РіР»Р°РІРЅРѕРј РјРµРЅСЋ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
     selectMainMenuButton(selectedButtonIndex);
 }
 
@@ -79,6 +99,20 @@ void GameWindowView::initializeButtons() {
     gameOverToMainMenuButton.setFillColor(palette.defaultButtonColor);
 }
 
+void GameWindowView::initializeInputField() {
+    inputField.setSize(sf::Vector2f(200, 50));
+    inputField.setPosition(50, 600); 
+    inputField.setFillColor(palette.textField);
+}
+
+void GameWindowView::setupText() {
+    playerNameText.setFont(font);
+    playerNameText.setCharacterSize(24);
+    playerNameText.setFillColor(sf::Color::Black);
+    playerNameText.setPosition(inputField.getPosition().x + 10, inputField.getPosition().y + 10);
+    playerNameText.setString(playerName.empty() ? "Enrer the name" : playerName);
+  
+}
 void GameWindowView::drawMainMenu() {
     window.clear(palette.background);
     window.draw(mainMenuStartButton);
@@ -89,6 +123,10 @@ void GameWindowView::drawMainMenu() {
     window.draw(mainMenuChangeColorText);
     window.draw(mainMenuLeaderboardText);
     window.draw(mainMenuExitText);
+
+    window.draw(inputField);
+    setupText();
+    window.draw(playerNameText);
 }
 void GameWindowView::handleMainMenuMouseMove(int mouseX, int mouseY, GameState gameState) {
     if (gameState != GameState::MainMenu) {
@@ -111,6 +149,10 @@ void GameWindowView::handleMainMenuMouseMove(int mouseX, int mouseY, GameState g
         hoveredButton = &mainMenuExitButton;
         selectedButtonIndex = 3;
     }
+    else if (inputField.getGlobalBounds().contains(mouseX, mouseY)) {
+        isInputActive = true;
+        hoveredButton = &inputField;
+    }
     else {
         hoveredButton = nullptr;
     }
@@ -119,17 +161,33 @@ void GameWindowView::handleMainMenuMouseMove(int mouseX, int mouseY, GameState g
 }
 
 void GameWindowView::handleMainMenuKeyboardInput(const sf::Event& event) {
+    if (isInputActive) { 
+        if (event.type == sf::Event::TextEntered) { 
+            if (event.text.unicode < 128 && event.text.unicode != '\b') { 
+                playerName += static_cast<char>(event.text.unicode);
+            }
+            else if (event.text.unicode == '\b' && !playerName.empty()) { 
+                playerName.pop_back();
+            }
+        }
+    }
+
     if (event.type == sf::Event::KeyPressed) {
         if (event.key.code == sf::Keyboard::Up) {
-            selectedButtonIndex = (selectedButtonIndex + 3) % 4; // Move up, wrap around
+            selectedButtonIndex = (selectedButtonIndex + 3) % 4;
             selectMainMenuButton(selectedButtonIndex);
         }
         else if (event.key.code == sf::Keyboard::Down) {
-            selectedButtonIndex = (selectedButtonIndex + 1) % 4; // Move down, wrap around
+            selectedButtonIndex = (selectedButtonIndex + 1) % 4;
+            selectMainMenuButton(selectedButtonIndex);
+        } else if (event.type == sf::Keyboard::Enter) {
             selectMainMenuButton(selectedButtonIndex);
         }
     }
+    
 }
+
+
 bool GameWindowView::isStartButtonClicked(int mouseX, int mouseY) {
     return mainMenuStartButton.getGlobalBounds().contains(mouseX, mouseY);
 }
@@ -177,7 +235,7 @@ void GameWindowView::updateMainMenuButtonAppearance() {
 
 void GameWindowView::drawGameOverMenu(const LeaderBoard& leaderboard, int currentScore) {
     sf::RectangleShape background(sf::Vector2f(window.getSize().x, window.getSize().y));
-    background.setFillColor(sf::Color(palette.background.r, palette.background.g, palette.background.b, 150));  // Полупрозрачный фон
+    background.setFillColor(sf::Color(palette.background.r, palette.background.g, palette.background.b, 150));  // РџРѕР»СѓРїСЂРѕР·СЂР°С‡РЅС‹Р№ С„РѕРЅ
     window.draw(background);
 
     sf::Text gameOverText;
@@ -273,7 +331,7 @@ void GameWindowView::updateGameOverButtonAppearance() {
     gameOverReplayButton.setFillColor(hoveredButton == &gameOverReplayButton ? palette.selectedButtonColor : palette.defaultButtonColor);
     gameOverToMainMenuButton.setFillColor(hoveredButton == &gameOverToMainMenuButton ? palette.selectedButtonColor : palette.defaultButtonColor);
 
-    // Предполагается, что у тебя есть текстовые элементы для кнопок геймовера
+    // РџСЂРµРґРїРѕР»Р°РіР°РµС‚СЃСЏ, С‡С‚Рѕ Сѓ С‚РµР±СЏ РµСЃС‚СЊ С‚РµРєСЃС‚РѕРІС‹Рµ СЌР»РµРјРµРЅС‚С‹ РґР»СЏ РєРЅРѕРїРѕРє РіРµР№РјРѕРІРµСЂР°
     gameOverReplayText.setFillColor(hoveredButton == &gameOverReplayButton ? palette.selectedTextColor : palette.defaultTextColor);
     gameOverToMainMenuText.setFillColor(hoveredButton == &gameOverToMainMenuButton ? palette.selectedTextColor : palette.defaultTextColor);
 }

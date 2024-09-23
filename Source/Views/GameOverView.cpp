@@ -16,30 +16,30 @@ GameOverView::GameOverView(const std::function<void()>& onRestart, const std::fu
     exitText.setFont(font);
     exitText.setString("Exit");
 
-    // Установите размеры и позиции кнопок
+    // РЈСЃС‚Р°РЅРѕРІРёС‚Рµ СЂР°Р·РјРµСЂС‹ Рё РїРѕР·РёС†РёРё РєРЅРѕРїРѕРє
     restartButton.setSize(sf::Vector2f(200, 50));
     exitButton.setSize(sf::Vector2f(200, 50));
-    // Позиции кнопок можно задать на основе размера окна или других параметров
+    // РџРѕР·РёС†РёРё РєРЅРѕРїРѕРє РјРѕР¶РЅРѕ Р·Р°РґР°С‚СЊ РЅР° РѕСЃРЅРѕРІРµ СЂР°Р·РјРµСЂР° РѕРєРЅР° РёР»Рё РґСЂСѓРіРёС… РїР°СЂР°РјРµС‚СЂРѕРІ
 }
 
 void GameOverView::draw(sf::RenderWindow& window, const std::string& playerName, int currentScore, const std::vector<ScoreEntry>& leaderboard) {
-    // Отрисовка фона и текста
+    // РћС‚СЂРёСЃРѕРІРєР° С„РѕРЅР° Рё С‚РµРєСЃС‚Р°
     window.draw(background);
     window.draw(gameOverText);
     scoreText.setString("Score: " + std::to_string(currentScore));
     window.draw(scoreText);
 
-    // Отрисовка кнопок
+    // РћС‚СЂРёСЃРѕРІРєР° РєРЅРѕРїРѕРє
     window.draw(restartText);
     window.draw(exitText);
 }
 
 void GameOverView::handleMouseClick(int mouseX, int mouseY) {
     if (isRestartButtonClicked(mouseX, mouseY)) {
-        onRestart(); // Вызов функции перезапуска
+        onRestart(); // Р’С‹Р·РѕРІ С„СѓРЅРєС†РёРё РїРµСЂРµР·Р°РїСѓСЃРєР°
     }
     else if (isExitButtonClicked(mouseX, mouseY)) {
-        onExit(); // Вызов функции выхода
+        onExit(); // Р’С‹Р·РѕРІ С„СѓРЅРєС†РёРё РІС‹С…РѕРґР°
     }
 }
 
