@@ -45,38 +45,31 @@ MainGameController::MainGameController()
     }
 }
 
-
 void MainGameController::handleMainMenuEvent(const sf::Event& event) {
     if (currentState == GameState::MainMenu) {
         if (event.type == sf::Event::MouseButtonPressed || (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Enter)) {
-            // Проверяем активную кнопку, если нажата клавиша Enter
             if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Enter) {
-                switch (gameWindowView.selectedButtonIndex) { // Получаем индекс выбранной кнопки
-                case 0: // Индекс кнопки "Start"
+                switch (gameWindowView.selectedButtonIndex) {
+                case 0:
                     currentState = GameState::InGame;
                     break;
-                case 1: // Индекс кнопки "Change Color"
+                case 1:
                     std::cout << "Change color\n";
                     break;
-                case 2: // Индекс кнопки "Leaderboard"
+                case 2:
                     std::cout << "isLeaderboardButtonClicked\n";
                     break;
-                case 3: // Индекс кнопки "Exit"
+                case 3:
                     std::cout << "Exit\n";
                     exit(0);
                 }
-            }
-            // Обработка кликов мыши
-            else if (gameWindowView.isStartButtonClicked(event.mouseButton.x, event.mouseButton.y)) {
+            } else if (gameWindowView.isStartButtonClicked(event.mouseButton.x, event.mouseButton.y)) {
                 currentState = GameState::InGame;
-            }
-            else if (gameWindowView.isChangeColorButtonClicked(event.mouseButton.x, event.mouseButton.y)) {
+            } else if (gameWindowView.isChangeColorButtonClicked(event.mouseButton.x, event.mouseButton.y)) {
                 std::cout << "Change color\n";
-            }
-            else if (gameWindowView.isLeaderboardButtonClicked(event.mouseButton.x, event.mouseButton.y)) {
+            } else if (gameWindowView.isLeaderboardButtonClicked(event.mouseButton.x, event.mouseButton.y)) {
                 std::cout << "isLeaderboardButtonClicked\n";
-            }
-            else if (gameWindowView.isExitButtonClicked(event.mouseButton.x, event.mouseButton.y)) {
+            } else if (gameWindowView.isExitButtonClicked(event.mouseButton.x, event.mouseButton.y)) {
                 std::cout << "Exit\n";
                 exit(0);
             }
@@ -366,15 +359,7 @@ restart:
         // управляет логикой блокировки тетромино и обрабатывает события управления.
         while (gameWindow.isOpen()) {
             float elapsedTime = trackingFrameTime.getElapsedTime().asSeconds();
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
-                drawGamePause();
-            }
             
-            if (sf::Event::Closed) {
-                currentState = GameState::MainMenu;
-                isGameOver = true;
-                gameWindow.close();
-            }
             for (int i = 0; i < 4; i++) {
                 previousPiecePosition[i] = currentPiece[i];
                 currentPiece[i].y++;
@@ -439,11 +424,38 @@ restart:
                     }
                 }
 
-               /* if (e.type == sf::Event::Closed) {
+                if (isOnFocus && e.type == sf::Event::KeyPressed) {
+                    if (e.key.code == sf::Keyboard::Escape) {
+                        currentState = GameState::GamePause;
+
+                        while (true) {
+                            sf::Event pauseEvent;
+                            while (gameWindow.pollEvent(pauseEvent)) {
+                                if (pauseEvent.type == sf::Event::KeyPressed && pauseEvent.key.code == sf::Keyboard::Escape) {
+                                    currentState = GameState::InGame;
+                                    gameWindow.clear(); 
+                                    break;
+                                }
+                                if (pauseEvent.type == sf::Event::Closed) {
+                                    currentState = GameState::MainMenu;
+                                    gameWindow.close(); 
+                                    return; 
+                                }
+                            }
+
+                            gameWindow.clear();
+                            drawGamePause();
+                            gameWindow.display();
+                        }
+                    }
+                }
+
+                if (e.type == sf::Event::Closed) {
                     currentState = GameState::MainMenu;
-                    isGameOver = true;
-                    gameWindow.close();
-                }*/
+                    gameWindow.close(); 
+                    return;
+                }
+
             }
 
             if (isOnFocus) {
@@ -482,7 +494,7 @@ restart:
                     goto restart;
                 }
 
-               
+                
 
                 /// \brief Проверяет, проиграл ли игрок, и обрабатывает ускоренное падение.
                 ///

@@ -18,16 +18,28 @@ else()
 endif()
 
 find_package(nlohmann_json REQUIRED)
+find_package(GTest CONFIG REQUIRED)
 
 add_executable(Tetris_SFML
 Source/Main.cpp
 Source/Controllers/MainGameController.hpp
 Source/Controllers/MainGameController.cpp
 Source/Utils/ColorPalette.hpp
-Source/Views/MainMenuView.hpp
-Source/Views/MainMenuView.cpp
+Source/Views/GameOverView.hpp
+Source/Views/GameOverView.cpp
 Source/Views/GameWindowView.hpp
 Source/Views/GameWindowView.cpp
+Source/Utils/LeaderBoard.hpp
+Source/Utils/LeaderBoard.cpp
+Source/Utils/GameStates.hpp
+Source/Utils/Particle.hpp
+Source/Utils/Particle.cpp
+Source/Utils/Piece.hpp
+Source/Utils/Piece.cpp
+)
+
+add_executable(Tetris_Tests
+Source/Tests/Tests.cpp
 Source/Utils/LeaderBoard.hpp
 Source/Utils/LeaderBoard.cpp
 )
@@ -37,6 +49,9 @@ sfml-system
 sfml-window
 sfml-graphics
 nlohmann_json::nlohmann_json
+)
+target_link_libraries (Tetris_Tests
+GTest::gtest_main
 )
 
 target_compile_definitions(Tetris_SFML PRIVATE RESOURCE_DIR="${CMAKE_SOURCE_DIR}/Resources")

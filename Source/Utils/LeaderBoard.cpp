@@ -1,3 +1,4 @@
+
 #include "LeaderBoard.hpp"
 #include <fstream>
 #include <iostream>
@@ -46,6 +47,10 @@ void LeaderBoard::print() const {
 
 std::vector<ScoreEntry> LeaderBoard::getTopScores() const {
     return scores;
+}
+
+void LeaderBoard::setFilename(const std::string& newFilename) {
+    filename = newFilename;
 }
 
 ScoreEntry LeaderBoard::getNearestScore(int currentScore) const {

@@ -13,9 +13,10 @@ struct ScoreEntry {
 };
 
 class LeaderBoard {
-private:
+private: 
     std::vector<ScoreEntry> scores;
-    const std::string filename = "Tetris.SFML/Resources/JSON/leaderboard.json";
+   
+    std::string filename = "scores.json";
 
 public:
     LeaderBoard();
@@ -25,6 +26,7 @@ public:
     void print() const;
     std::vector<ScoreEntry> getTopScores() const;
     ScoreEntry getNearestScore(int currentScore) const;
+    void setFilename(const std::string& newFilename);
 };
 
 #endif // LEADERBOARD_HPP
