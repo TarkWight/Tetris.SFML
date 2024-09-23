@@ -40,7 +40,7 @@ protected:
     int score = 0;
     bool isGameOver = false;
     std::string resourcePath = RESOURCE_DIR;
-    bool isMenuActive = true;
+    //bool isMenuActive = true;
     int board[HEIGHT][WIDTH] = { 0 };
 
     Piece currentPiece[4]{}, previousPiecePosition[4]{}, ghost[4]{};
@@ -65,17 +65,6 @@ protected:
     void createParticle(std::vector<Particle>* particles);
     int sign(int num);
     int calculateScore(int lineClearCount, int combo);
-    sf::Font font;
-    ColorPalette palette;
-    sf::RectangleShape* hoveredButton;
-    int selectedButtonIndex;
-    sf::RectangleShape pauseContinueButton;
-    sf::RectangleShape pauseExitToMenuButton;
-    sf::Text pauseContinueText;
-    sf::Text pauseExitToMenuText;
-    void drawGamePause();
-    void selectPauseButton(int index);
-    void updatePauseButtonAppearance();
 };
 
 #endif // MAINGAMECONTROLLER_HPP

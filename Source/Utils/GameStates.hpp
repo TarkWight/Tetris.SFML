@@ -4,7 +4,6 @@
 enum class GameState {
     MainMenu,
     InGame,
-    GamePause,
     GameOver
 };
 

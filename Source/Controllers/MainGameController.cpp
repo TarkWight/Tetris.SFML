@@ -6,8 +6,7 @@ MainGameController::MainGameController()
     : window(sf::VideoMode(600, 720), "Tetris Game"), 
     gameWindowView(window),
     leaderboard(),
-    isGameOver(false),
-    isMenuActive(true)
+    isGameOver(false)
 {
     window.setFramerateLimit(FRAMERATE);
 
@@ -31,9 +30,6 @@ MainGameController::MainGameController()
             break;
         case GameState::InGame:
             startTetrisGame();
-            break;
-        case GameState::GamePause:
-            drawGamePause();
             break;
         case GameState::GameOver:
             gameWindowView.drawGameOverMenu(leaderboard, score);
@@ -92,41 +88,6 @@ void MainGameController::handleMainMenuEvent(const sf::Event& event) {
 }
 
 
-
-void MainGameController::drawGamePause() {
-    sf::RectangleShape background(sf::Vector2f(window.getSize().x, window.getSize().y));
-    background.setFillColor(sf::Color(0, 0, 0, 150));
-    window.draw(background);
-
-    window.draw(pauseContinueButton);
-    window.draw(pauseExitToMenuButton);
-    window.draw(pauseContinueText);
-    window.draw(pauseExitToMenuText);
-}
-
-void MainGameController::selectPauseButton(int index) {
-    switch (index) {
-    case 0:
-        hoveredButton = &pauseContinueButton;
-        break;
-    case 1:
-        hoveredButton = &pauseExitToMenuButton;
-        break;
-    default:
-        hoveredButton = nullptr;
-        break;
-    }
-    updatePauseButtonAppearance();
-}
-void MainGameController::updatePauseButtonAppearance() {
-    pauseContinueButton.setFillColor(hoveredButton == &pauseContinueButton ? palette.selectedButtonColor : palette.defaultButtonColor);
-    pauseExitToMenuButton.setFillColor(hoveredButton == &pauseExitToMenuButton ? palette.selectedButtonColor : palette.defaultButtonColor);
-
-    // Предполагается, что у тебя есть текстовые элементы для кнопок паузы
-    pauseContinueText.setFillColor(hoveredButton == &pauseContinueButton ? palette.selectedTextColor : palette.defaultTextColor);
-    pauseExitToMenuText.setFillColor(hoveredButton == &pauseExitToMenuButton ? palette.selectedTextColor : palette.defaultTextColor);
-}
-
 std::vector<int> MainGameController::generateNewBag() {
     std::vector<int> templateBag;
 
@@ -148,11 +109,9 @@ std::vector<int> MainGameController::generateNewBag() {
 
 bool MainGameController::isCollided() {
     for (int i = 0; i < 4; i++) {
-        /// Проверка выхода за границы игрового поля.
         if (currentPiece[i].x < 0 || currentPiece[i].x >= WIDTH || currentPiece[i].y >= HEIGHT) {
             return false;
         }
-        /// Проверка на наличие блока в занимаемой позиции.
         else if (board[currentPiece[i].y][currentPiece[i].x]) {
             return false;
         }
@@ -183,7 +142,6 @@ bool MainGameController::isDead() {
 
 void MainGameController::createParticle(std::vector<Particle>* particles) {
     for (int i = 0; i < 4; i++) {
-        /// Генерация новой частицы с случайными координатами и направлением движения.
         Particle particle((currentPiece[i].x * 30) + 150 + 15 + (rand() % 60 - 30),
             (currentPiece[i].y * 30) - 60 - 30,
             rand() % 250 + 150,
@@ -424,33 +382,8 @@ restart:
                     }
                 }
 
-                if (isOnFocus && e.type == sf::Event::KeyPressed) {
-                    if (e.key.code == sf::Keyboard::Escape) {
-                        currentState = GameState::GamePause;
-
-                        while (true) {
-                            sf::Event pauseEvent;
-                            while (gameWindow.pollEvent(pauseEvent)) {
-                                if (pauseEvent.type == sf::Event::KeyPressed && pauseEvent.key.code == sf::Keyboard::Escape) {
-                                    currentState = GameState::InGame;
-                                    gameWindow.clear(); 
-                                    break;
-                                }
-                                if (pauseEvent.type == sf::Event::Closed) {
-                                    currentState = GameState::MainMenu;
-                                    gameWindow.close(); 
-                                    return; 
-                                }
-                            }
-
-                            gameWindow.clear();
-                            drawGamePause();
-                            gameWindow.display();
-                        }
-                    }
-                }
-
-                if (e.type == sf::Event::Closed) {
+            
+                if (e.type == sf::Event::Closed || e.key.code == sf::Keyboard::Escape) {
                     currentState = GameState::MainMenu;
                     gameWindow.close(); 
                     return;
