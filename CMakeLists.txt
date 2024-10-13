@@ -55,3 +55,4 @@ GTest::gtest_main
 )
 
 target_compile_definitions(Tetris_SFML PRIVATE RESOURCE_DIR="${CMAKE_SOURCE_DIR}/Resources")
+target_compile_definitions(Tetris_Tests PRIVATE RESOURCE_DIR="${CMAKE_SOURCE_DIR}/Resources")

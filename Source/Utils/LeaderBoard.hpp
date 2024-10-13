@@ -1,9 +1,11 @@
 #ifndef LEADERBOARD_HPP
 #define LEADERBOARD_HPP
 
-#include <vector>
+#include <array>
 #include <string>
 #include <nlohmann/json.hpp>
+#include <fstream>
+#include <iostream>
 
 struct ScoreEntry {
     std::string playerName;
@@ -13,20 +15,19 @@ struct ScoreEntry {
 };
 
 class LeaderBoard {
-private: 
-    std::vector<ScoreEntry> scores;
-   
+protected:
+    std::array<ScoreEntry, 2> scores;
     std::string filename = "scores.json";
-
+    std::string resourcePath = RESOURCE_DIR;
 public:
     LeaderBoard();
     void load();
     void save();
     void addScore(const std::string& playerName, int score);
     void print() const;
-    std::vector<ScoreEntry> getTopScores() const;
-    ScoreEntry getNearestScore(int currentScore) const;
+    std::array<ScoreEntry, 2> getScores() const;
     void setFilename(const std::string& newFilename);
+    std::string getFullPath() const;
 };
 
 #endif // LEADERBOARD_HPP

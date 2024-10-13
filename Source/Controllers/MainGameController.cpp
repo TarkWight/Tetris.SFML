@@ -10,7 +10,9 @@ MainGameController::MainGameController()
 {
     window.setFramerateLimit(FRAMERATE);
 
-}void MainGameController::runGame() {
+}
+
+void MainGameController::runGame() {
     while (window.isOpen()) {
         sf::Event event;
         while (window.pollEvent(event)) {
@@ -168,6 +170,7 @@ int MainGameController::calculateScore(int lineClearCount, int combo) {
     points *= (combo + 1);
     return points;
 }
+
 void MainGameController::startTetrisGame() {
     sf::RenderWindow gameWindow(sf::VideoMode(600, 720), "Tetris");
     srand(static_cast<unsigned int>(time(0))); 

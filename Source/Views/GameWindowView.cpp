@@ -177,7 +177,7 @@ void GameWindowView::updateMainMenuButtonAppearance() {
 
 void GameWindowView::drawGameOverMenu(const LeaderBoard& leaderboard, int currentScore) {
     sf::RectangleShape background(sf::Vector2f(window.getSize().x, window.getSize().y));
-    background.setFillColor(sf::Color(palette.background.r, palette.background.g, palette.background.b, 150));  // Полупрозрачный фон
+    background.setFillColor(sf::Color(palette.background.r, palette.background.g, palette.background.b, 150));
     window.draw(background);
 
     sf::Text gameOverText;
@@ -201,10 +201,10 @@ void GameWindowView::drawGameOverMenu(const LeaderBoard& leaderboard, int curren
         window.getSize().y * 0.4f);
     window.draw(scoreText);
 
-    if (!leaderboard.getTopScores().empty()) {
+    if (!leaderboard.getScores().empty()) {
         sf::Text topScoreText;
         topScoreText.setFont(font);
-        topScoreText.setString("Top Score: " + std::to_string(leaderboard.getTopScores().front().score));
+        topScoreText.setString("Top Score: " + std::to_string(leaderboard.getScores().front().score));
         topScoreText.setCharacterSize(35);
         topScoreText.setFillColor(palette.defaultTextColor);
         topScoreText.setPosition(

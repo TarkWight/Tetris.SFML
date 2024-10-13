@@ -1,4 +1,3 @@
-
 #include "LeaderBoard.hpp"
 #include <fstream>
 #include <iostream>
@@ -8,17 +7,20 @@ LeaderBoard::LeaderBoard() {
 }
 
 void LeaderBoard::load() {
-    std::ifstream inputFile(filename);
+    std::ifstream inputFile(getFullPath());
     if (inputFile.is_open()) {
         nlohmann::json jsonData;
         inputFile >> jsonData;
-        scores = jsonData.get<std::vector<ScoreEntry>>();
+        scores = jsonData.get<std::array<ScoreEntry, 2>>();
         inputFile.close();
+    }
+    else {
+        scores = { ScoreEntry{"Player 1", 1000}, ScoreEntry{"Player 2", 500} };
     }
 }
 
 void LeaderBoard::save() {
-    std::ofstream outputFile(filename);
+    std::ofstream outputFile(getFullPath());
     if (outputFile.is_open()) {
         nlohmann::json jsonData = scores;
         outputFile << jsonData.dump(4);
@@ -27,14 +29,17 @@ void LeaderBoard::save() {
 }
 
 void LeaderBoard::addScore(const std::string& playerName, int score) {
-    ScoreEntry newEntry{ playerName, score };
-    scores.push_back(newEntry);
-    std::sort(scores.begin(), scores.end(), [](const ScoreEntry& a, const ScoreEntry& b) {
-        return a.score > b.score;
-    });
-    if (scores.size() > 7) {
-        scores.pop_back();
+    ScoreEntry currentPlayerScore{ playerName, score };
+
+    if (score <= scores[1].score) {
+        return;
+    } else if (score > scores[1].score && score <= scores[0].score) {
+        scores[1] = currentPlayerScore;
+    } else if (score > scores[0].score) {
+        scores[1] = scores[0]; 
+        scores[0] = currentPlayerScore; 
     }
+
     save();
 }
 
@@ -45,7 +50,7 @@ void LeaderBoard::print() const {
     }
 }
 
-std::vector<ScoreEntry> LeaderBoard::getTopScores() const {
+std::array<ScoreEntry, 2> LeaderBoard::getScores() const {
     return scores;
 }
 
@@ -53,13 +58,7 @@ void LeaderBoard::setFilename(const std::string& newFilename) {
     filename = newFilename;
 }
 
-ScoreEntry LeaderBoard::getNearestScore(int currentScore) const {
-    ScoreEntry nearest = scores.front();
-    for (const auto& entry : scores) {
-        if (entry.score < currentScore) {
-            nearest = entry;
-            break;
-        }
-    }
-    return nearest;
+std::string LeaderBoard::getFullPath() const
+{
+    return resourcePath + "/JSON/" + filename;
 }
