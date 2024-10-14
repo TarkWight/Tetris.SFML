@@ -39,6 +39,7 @@ protected:
    
     int score = 0;
     bool isGameOver = false;
+    bool scoreAddedToLeaderboard = false;
     std::string resourcePath = RESOURCE_DIR;
     int board[HEIGHT][WIDTH] = { 0 };
 

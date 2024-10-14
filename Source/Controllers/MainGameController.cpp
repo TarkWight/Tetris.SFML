@@ -32,10 +32,14 @@ void MainGameController::runGame() {
             break;
         case GameState::InGame:
             startTetrisGame();
+            scoreAddedToLeaderboard = false; // Сбрасываем флаг при начале новой игры
             break;
         case GameState::GameOver:
             gameWindowView.drawGameOverMenu(leaderboard, score);
-            leaderboard.addScore("Игрок захардкожен", score);
+            if (!scoreAddedToLeaderboard) {
+                leaderboard.addScore("Игрок захардкожен", score);
+                scoreAddedToLeaderboard = true; // Устанавливаем флаг
+            }
             break;
         }
 
